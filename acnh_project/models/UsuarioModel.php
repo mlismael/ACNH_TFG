@@ -98,5 +98,52 @@ class UsuarioModel
             return false;
         }
     }
+
+    // Método para actualizar datos del usuario
+    public function actualizar($id, $updateData): bool
+    {
+        try {
+            if (empty($updateData)) {
+                return false;
+            }
+
+            // Construir dinámicamente la consulta UPDATE
+            $campos = [];
+            $valores = [];
+            
+            if (isset($updateData['username'])) {
+                $campos[] = 'username = ?';
+                $valores[] = $updateData['username'];
+            }
+            if (isset($updateData['email'])) {
+                $campos[] = 'email = ?';
+                $valores[] = $updateData['email'];
+            }
+            if (isset($updateData['nombre_isla'])) {
+                $campos[] = 'nombre_isla = ?';
+                $valores[] = $updateData['nombre_isla'];
+            }
+
+            if (empty($campos)) {
+                return false;
+            }
+
+            // Agregar fecha de actualización
+            $campos[] = 'fecha_actualizacion = NOW()';
+            $valores[] = $id;
+
+            $sql = 'UPDATE USUARIO SET ' . implode(', ', $campos) . ' WHERE id = ?';
+            $gsent = $this->db->prepare($sql);
+            
+            // Vincular parámetros
+            for ($i = 0; $i < count($valores); $i++) {
+                $gsent->bindParam($i + 1, $valores[$i]);
+            }
+
+            return $gsent->execute();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }
 ?>

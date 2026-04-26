@@ -196,3 +196,47 @@
     transform: scale(0.98);
     filter: brightness(0.75);
 }
+
+/* ============================
+   BOT\u00d3N DE CORAZ\u00d3N AGREGAR A MI ISLA
+============================= */
+
+.quote-box {
+    position: relative;
+}
+
+.btn-heart {
+    position: absolute;
+    right: 0;
+    top: -8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #e85d75;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.btn-heart:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 2px 4px rgba(232, 93, 117, 0.4));
+}
+
+.btn-heart:active {
+    transform: scale(0.95);
+}
+
+.btn-heart.active i {
+    color: #e85d75;
+    text-shadow: 0 0 8px rgba(232, 93, 117, 0.6);
+}
+
+.btn-heart i {
+    transition: all 0.3s ease;
+}

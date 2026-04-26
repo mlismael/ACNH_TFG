@@ -473,7 +473,7 @@ export class TranslationService {
 
   // Mapas de traducción para personalidades (Personalities)
   private personalityMap: { [key: string]: string } = {
-    'Big sister': 'Hermana mayor',
+    'Big sister': 'Responsable',
     Cranky: 'Gruñón',
     Jock: 'Deportista',
     Lazy: 'Perezoso',
@@ -538,18 +538,18 @@ export class TranslationService {
 
   // En TranslationService
   private zodiacSymbols: { [key: string]: string } = {
-    Aries: '♈',
-    Taurus: '♉',
-    Gemini: '♊',
-    Cancer: '♋',
-    Leo: '♌',
-    Virgo: '♍',
-    Libra: '♎',
-    Scorpio: '♏',
-    Sagittarius: '♐',
-    Capricorn: '♑',
-    Aquarius: '♒',
-    Pisces: '♓',
+    Aries: 'aries.png',
+    Taurus: 'tauro.png',
+    Gemini: 'geminis.png',
+    Cancer: 'cancer.png',
+    Leo: 'leo.png',
+    Virgo: 'virgo.png',
+    Libra: 'libra.png',
+    Scorpio: 'escorpio.png',
+    Sagittarius: 'sagitario.png',
+    Capricorn: 'capricornio.png',
+    Aquarius: 'acuario.png',
+    Pisces: 'piscis.png',
   };
 
   // Método para traducir un coleccionable (peces, bichos, criaturas marinas)

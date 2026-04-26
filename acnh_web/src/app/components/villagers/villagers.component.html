@@ -40,7 +40,7 @@
                     <img [src]="v.image_url" [alt]="v.name" class="villager-img">
                 </div>
 
-                <div class="card-body pt-0">
+                <div class="card-body pt-0 position-relative">
                     <div class="d-flex justify-content-center align-items-center mb-2">
                         @if (v.gender === 'Macho') {
                         <i class="bi bi-gender-male text-primary fs-6"></i>
@@ -63,14 +63,24 @@
                         <div class="info-row">
                             <span class="label">Signo</span>
                             <span class="value">
-                                <img [src]="'/assets/' + v.sign_icon" [alt]="v.sign"
-                                    class="zodiac-badge">
+                                <img [src]="'/assets/' + v.sign_icon" [alt]="v.sign" class="zodiac-badge">
                             </span>
                         </div>
                     </div>
                     @if (v.quote) {
-                    <div class="quote-box mt-2">
+                    <div class="quote-box mt-2 position-relative">
                         <p class="mb-0 text-center">"{{ v.quote }}"</p>
+                        <button class="btn-heart" 
+                                [class.active]="esAldeanoAgregado(v.id.toString())"
+                                (click)="ponerAFavoritos(v)" 
+                                type="button"
+                                title="Agregar a mi isla">
+                            @if (esAldeanoAgregado(v.id.toString())) {
+                                <i class="bi bi-heart-fill"></i>
+                            } @else {
+                                <i class="bi bi-heart"></i>
+                            }
+                        </button>
                     </div>
                     }
                 </div>

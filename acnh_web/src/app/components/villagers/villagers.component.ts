@@ -5,6 +5,8 @@ import { NookipediaService } from '../../services/nookipedia.service';
 import { MOCK_VILLAGERS } from './villagers.mock';
 import { TranslationService } from '../../services/translation.service';
 import { FormsModule } from '@angular/forms';
+import { UsuarioService } from '../../services/usuario.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-villagers',
@@ -16,19 +18,24 @@ import { FormsModule } from '@angular/forms';
 export class VillagersComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private nookipediaService = inject(NookipediaService);
+  private usuarioService = inject(UsuarioService);
+  private authService = inject(AuthService);
 
   aldeanos: any[] = []; // Aquí se guarda lo que llega de la API
   paginaActual: number = 1;
   itemsPorPagina: number = 24;
   especies: string[] = [];
+  aldeanosAgregados: Set<string> = new Set(); // Para rastrear aldeanos ya agregados
 
   ngOnInit() {
     this.especies = this.translationService.getAvailableSpecies();
+    this.cargarAldeanosGuardados();
 
     this.nookipediaService.getVillagers().subscribe({
       next: (data) => {
         // Ordenamos alfabéticamente por el nombre (que ya viene traducido del servicio)
         this.aldeanos = data.sort((a: any, b: any) => a.name.localeCompare(b.name));
+        this.guardarImagenesAldeanos(this.aldeanos);
       },
       error: (err) => {
         console.error('API Caída, cargando mocks...', err);
@@ -116,5 +123,96 @@ export class VillagersComponent implements OnInit, OnDestroy {
     return filtrados.slice(inicio, inicio + this.itemsPorPagina);
   }
 
-  // ... No olvides actualizar también el totalPaginas con la misma lógica de filtrado
+  /**
+   * Guardar imágenes de todos los aldeanos en sessionStorage
+   * Se guardan bajo la clave "aldeanos_cache" con estructura { id_api: url_image }
+   */
+  private guardarImagenesAldeanos(aldeanos: any[]): void {
+    const cache = sessionStorage.getItem('aldeanos_cache');
+    const aldeanosCache = cache ? JSON.parse(cache) : {};
+
+    aldeanos.forEach((aldeano) => {
+      if (aldeano.id && aldeano.image_url) {
+        aldeanosCache[aldeano.id] = aldeano.image_url;
+      }
+    });
+
+    sessionStorage.setItem('aldeanos_cache', JSON.stringify(aldeanosCache));
+  }
+
+  /**
+   * Cargar aldeanos agregados del usuario desde sessionStorage
+   */
+  private cargarAldeanosGuardados(): void {
+    const agregados = sessionStorage.getItem('aldeanos_agregados');
+    if (agregados) {
+      const lista = JSON.parse(agregados);
+      this.aldeanosAgregados = new Set(lista);
+    }
+  }
+
+  /**
+   * Verificar si un aldeano ya fue agregado
+   */
+  esAldeanoAgregado(aldeanoId: string): boolean {
+    return this.aldeanosAgregados.has(aldeanoId);
+  }
+
+  /**
+   * Añadir aldeano como favorito y enviarlo al backend
+   */
+  ponerAFavoritos(v: any): void {
+    const usuarioActual = this.authService.getCurrentUser();
+    if (!usuarioActual) {
+      console.error('Usuario no autenticado');
+      alert('Debes estar autenticado para agregar aldeanos');
+      return;
+    }
+
+    const aldeanoId = v.id.toString();
+    const yaAgregado = this.esAldeanoAgregado(aldeanoId);
+
+    if (yaAgregado) {
+      // Remover de favoritos
+      this.aldeanosAgregados.delete(aldeanoId);
+      this.actualizarSessionStorage();
+      return;
+    }
+
+    // Preparar datos para enviar al backend
+    const aldeanoData = {
+      id_api: v.id.toString(),
+      url_api: 'https://api.nookipedia.com/villagers',
+      nombre_aldeano: v.name,
+      imagen_aldeano: v.image_url,
+      personalidad: v.personality,
+    };
+
+    // Llamar al servicio para crear aldeano
+    this.usuarioService.createAldeanoUsuario(usuarioActual.id, aldeanoData).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          // Agregar a sessionStorage
+          this.aldeanosAgregados.add(aldeanoId);
+          this.actualizarSessionStorage();
+          console.log('Aldeano agregado exitosamente', v.name);
+        } else {
+          console.error('Error al agregar aldeano', response.message);
+          alert('Error: ' + (response.message || 'No se pudo agregar el aldeano'));
+        }
+      },
+      error: (err) => {
+        console.error('Error en la solicitud', err);
+        alert('Error al conectar con el servidor');
+      },
+    });
+  }
+
+  /**
+   * Actualizar sessionStorage con la lista de aldeanos agregados
+   */
+  private actualizarSessionStorage(): void {
+    const lista = Array.from(this.aldeanosAgregados);
+    sessionStorage.setItem('aldeanos_agregados', JSON.stringify(lista));
+  }
 }

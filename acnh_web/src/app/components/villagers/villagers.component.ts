@@ -1,5 +1,6 @@
 // src/app/pages/villagers/villagers.component.ts
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { ThemeService, PageThemeConfig } from '../../services/theme.service';
 import { NookipediaService } from '../../services/nookipedia.service';
 import { MOCK_VILLAGERS } from './villagers.mock';
@@ -20,6 +21,7 @@ export class VillagersComponent implements OnInit, OnDestroy {
   private nookipediaService = inject(NookipediaService);
   private usuarioService = inject(UsuarioService);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   aldeanos: any[] = []; // Aquí se guarda lo que llega de la API
   paginaActual: number = 1;
@@ -159,13 +161,42 @@ export class VillagersComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Verificar si el usuario está autenticado
+   */
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  /**
+   * Redirigir al login si no está autenticado
+   */
+  redirectToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  /**
+   * Manejador de click del botón corazón
+   * Si no está logueado, redirige al login
+   * Si está logueado, agrega el aldeano
+   */
+  onHeartClick(v: any, event: Event): void {
+    event.stopPropagation();
+    
+    if (!this.isLoggedIn()) {
+      this.redirectToLogin();
+      return;
+    }
+
+    this.ponerAFavoritos(v);
+  }
+
+  /**
    * Añadir aldeano como favorito y enviarlo al backend
    */
   ponerAFavoritos(v: any): void {
     const usuarioActual = this.authService.getCurrentUser();
     if (!usuarioActual) {
-      console.error('Usuario no autenticado');
-      alert('Debes estar autenticado para agregar aldeanos');
+      this.redirectToLogin();
       return;
     }
 

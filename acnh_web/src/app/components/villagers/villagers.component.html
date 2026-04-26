@@ -67,22 +67,25 @@
                             </span>
                         </div>
                     </div>
-                    @if (v.quote) {
+
                     <div class="quote-box mt-2 position-relative">
+                        @if (v.quote) {
                         <p class="mb-0 text-center">"{{ v.quote }}"</p>
+                        }
                         <button class="btn-heart" 
                                 [class.active]="esAldeanoAgregado(v.id.toString())"
-                                (click)="ponerAFavoritos(v)" 
-                                type="button"
-                                title="Agregar a mi isla">
+                                (click)="onHeartClick(v, $event)" 
+                                type="button" 
+                                [title]="isLoggedIn() ? 'Agregar a mi isla' : 'Inicia sesión para agregar aldeanos'">
                             @if (esAldeanoAgregado(v.id.toString())) {
-                                <i class="bi bi-heart-fill"></i>
+                            <i class="bi bi-heart-fill"></i>
                             } @else {
-                                <i class="bi bi-heart"></i>
+                            <i class="bi bi-heart"></i>
                             }
                         </button>
                     </div>
-                    }
+
+
                 </div>
             </div>
         </div>

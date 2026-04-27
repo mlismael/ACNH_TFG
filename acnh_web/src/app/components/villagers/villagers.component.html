@@ -12,10 +12,10 @@
 
         <div class="col-12 col-md-3">
             <label class="form-label small fw-bold text-success ps-2">ESPECIE</label>
-            <select [(ngModel)]="especieSeleccionada" class="form-select ac-input">
-                <option value="">Cualquier especie</option>
+            <select [(ngModel)]="especieSeleccionada" class="form-select ac-input text-secondary">
+                <option value="" class="text-secondary">Cualquier especie</option>
                 @for (esp of especies; track esp) {
-                <option [value]="esp">{{ esp }}</option>
+                <option [value]="esp" class="text-secondary">{{ esp }}</option>
                 }
             </select>
         </div>
@@ -68,21 +68,28 @@
                         </div>
                     </div>
 
-                    <div class="quote-box mt-2 position-relative">
+                    <div class="quote-box mt-2">
                         @if (v.quote) {
                         <p class="mb-0 text-center">"{{ v.quote }}"</p>
                         }
-                        <button class="btn-heart" 
-                                [class.active]="esAldeanoAgregado(v.id.toString())"
-                                (click)="onHeartClick(v, $event)" 
-                                type="button" 
-                                [title]="isLoggedIn() ? 'Agregar a mi isla' : 'Inicia sesión para agregar aldeanos'">
-                            @if (esAldeanoAgregado(v.id.toString())) {
-                            <i class="bi bi-heart-fill"></i>
-                            } @else {
-                            <i class="bi bi-heart"></i>
-                            }
-                        </button>
+
+                        @if (isLoggedIn) {
+                            <button class="btn-heart" 
+                                    [class.active]="esAldeanoAgregado(v.id.toString())"
+                                    (click)="ponerAFavoritos(v)" 
+                                    type="button" 
+                                    title="Agregar a mi isla">
+                                @if (esAldeanoAgregado(v.id.toString())) {
+                                    <i class="bi bi-heart-fill"></i>
+                                } @else {
+                                    <i class="bi bi-heart"></i>
+                                }
+                            </button>
+                        } @else {
+                            <a [routerLink]="['/login']" class="btn-heart btn-heart-login" title="Inicia sesión para agregar aldeanos">
+                                <i class="bi bi-heart"></i>
+                            </a>
+                        }
                     </div>
 
 

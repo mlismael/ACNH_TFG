@@ -7,7 +7,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.05);
     background-color: rgba(240, 255, 252, 0.6);
-    text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);
+    text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -22,7 +22,7 @@
 }
 
 .value {
-    color: #212529;
+    color: #212529 !important;
     /* Siempre oscuro */
     font-weight: 500;
 }
@@ -91,6 +91,14 @@
     }
 }
 
+@media (max-width: 767px) {
+    .btn-login-nav {
+        /* Un pequeño ajuste para que no toque el borde del móvil */
+        margin-right: 5px;
+        font-size: 0.85rem;
+    }
+}
+
 /* ============================
    PAGINADOR ADAPTATIVO
 ============================= */
@@ -141,7 +149,7 @@
     border: 2px solid color-mix(in srgb, var(--header-text) 20%, transparent);
     padding: 0.65rem 1.2rem;
     transition: all 0.3s ease;
-    color: var(--header-text);
+    color: #767676!important;
     font-weight: 500;
 }
 
@@ -151,6 +159,17 @@
     box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--theme-color) 15%, transparent);
     outline: none;
 }
+ ::placeholder {
+    color: #767676!important;
+    /* Asegura que el placeholder también sea oscuro */
+    opacity: 0.6;
+}
+
+/* 1. Atacamos la variable específica que usa Bootstrap para el texto del select */
+.form-select.ac-input {
+    color: #767676!important;
+}
+
 
 .search-box {
     position: relative;
@@ -168,6 +187,8 @@
 .search-box .ac-input {
     padding-left: 48px;
 }
+
+
 
 /* Botón Buscar Profesional */
 .btn-search {
@@ -198,29 +219,49 @@
 }
 
 /* ============================
-   BOT\u00d3N DE CORAZ\u00d3N AGREGAR A MI ISLA
+   BOTON DE CORAZON AGREGAR A MI ISLA
 ============================= */
 
 .quote-box {
     position: relative;
+    /* Forzamos que la caja siempre ocupe espacio aunque esté vacía */
+    min-height: 40px;
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-end;
+    /* Alinea el contenido (si existe) al fondo */
+}
+
+.quote-box p {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    /* Dejamos el hueco exacto para el botón a la derecha */
+    padding-right: 40px;
+    width: 100%;
+    text-align: center;
 }
 
 .btn-heart {
+    /* POSICIONAMIENTO CLAVADO */
     position: absolute;
     right: 0;
-    top: -8px;
+    bottom: 0;
+
+    /* Tamaño y estilo */
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1.5rem;
     color: #e85d75;
-    transition: all 0.3s ease;
-    padding: 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
+    z-index: 5;
+    transition: transform 0.2s ease;
 }
 
 .btn-heart:hover {

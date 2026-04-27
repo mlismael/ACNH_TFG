@@ -1,0 +1,275 @@
+/* Villagers Component CSS */
+.villager-card {
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+        box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(240, 255, 252, 0.6);
+    text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.1);
+}
+
+
+.label {
+    font-weight: 700;
+    color: #212529 !important;
+
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    opacity: 0.75;
+
+}
+
+.value {
+    color: #212529 !important;
+    /* Siempre oscuro */
+    font-weight: 500;
+}
+
+.villager-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+}
+
+.img-container {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.villager-img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    transition: transform 0.5s ease-in-out;
+}
+
+.villager-card:hover .villager-img {
+    transform: scale(1.15);
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+
+.zodiac-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+    color: white !important;
+    border-radius: 50%;
+    border: 2px solid #9f81bf;
+    padding: 0.15rem !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 1200px) {
+    .row-cols-xl-5>* {
+        flex: 0 0 auto;
+        width: 20%;
+    }
+}
+
+@media (max-width: 767px) {
+    .btn-login-nav {
+        /* Un pequeño ajuste para que no toque el borde del móvil */
+        margin-right: 5px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================
+   PAGINADOR ADAPTATIVO
+============================= */
+
+.btn-ac {
+    /* En modo oscuro será oscuro, en claro será blanco */
+    background-color: var(--header-bg);
+    border: 2px solid var(--theme-color);
+    color: var(--theme-color);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.btn-ac:hover:not(:disabled) {
+    background-color: var(--theme-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-ac:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--header-text);
+    color: var(--header-text);
+}
+
+.page-indicator {
+    background-color: var(--theme-color);
+    color: white;
+    border-radius: 30px;
+    /* Aplica un 20% de opacidad al color del tema */
+    border: 2px solid color-mix(in srgb, var(--theme-color) 20%, transparent);
+    font-size: 1rem;
+}
+
+/* ============================
+   BUSCADOR ADAPTATIVO
+============================= */
+
+.ac-input {
+    border-radius: 50px !important;
+    border: 2px solid color-mix(in srgb, var(--header-text) 20%, transparent);
+    padding: 0.65rem 1.2rem;
+    transition: all 0.3s ease;
+    color: #767676!important;
+    font-weight: 500;
+}
+
+.ac-input:focus {
+    border-color: var(--theme-color);
+    /* Sombra con un 15% de opacidad del color dinámico */
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--theme-color) 15%, transparent);
+    outline: none;
+}
+ ::placeholder {
+    color: #767676!important;
+    /* Asegura que el placeholder también sea oscuro */
+    opacity: 0.6;
+}
+
+/* 1. Atacamos la variable específica que usa Bootstrap para el texto del select */
+.form-select.ac-input {
+    color: #767676!important;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--theme-color);
+    font-size: 1.1rem;
+}
+
+.search-box .ac-input {
+    padding-left: 48px;
+}
+
+
+
+/* Botón Buscar Profesional */
+.btn-search {
+    background-color: var(--theme-color);
+    color: white;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Sombra basada en el color del tema */
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-color) 25%, transparent);
+}
+
+.btn-search:hover {
+    background-color: var(--theme-color);
+    /* Oscurecemos el fondo en un 15% mediante filtros (reemplaza a la variable hardcodeada) */
+    filter: brightness(0.85);
+    transform: scale(1.03) translateY(-2px);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--theme-color) 35%, transparent);
+    color: white;
+}
+
+.btn-search:active {
+    transform: scale(0.98);
+    filter: brightness(0.75);
+}
+
+/* ============================
+   BOTON DE CORAZON AGREGAR A MI ISLA
+============================= */
+
+.quote-box {
+    position: relative;
+    /* Forzamos que la caja siempre ocupe espacio aunque esté vacía */
+    min-height: 40px;
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-end;
+    /* Alinea el contenido (si existe) al fondo */
+}
+
+.quote-box p {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    /* Dejamos el hueco exacto para el botón a la derecha */
+    padding-right: 40px;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-heart {
+    /* POSICIONAMIENTO CLAVADO */
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    /* Tamaño y estilo */
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: rgb(241, 241, 143);
+    z-index: 5;
+    transition: transform 0.2s ease;
+}
+
+.btn-heart:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 2px 4px rgba(241, 241, 143, 0.4));
+}
+
+.btn-heart:active {
+    transform: scale(0.95);
+}
+
+.btn-heart.active i {
+    color: rgb(241, 241, 143);
+    text-shadow: 0 0 8px rgba(241, 241, 143, 0.593);
+}
+
+.btn-heart i {
+    transition: all 0.3s ease;
+}

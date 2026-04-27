@@ -1,6 +1,6 @@
 // src/app/pages/villagers/villagers.component.ts
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ThemeService, PageThemeConfig } from '../../services/theme.service';
 import { NookipediaService } from '../../services/nookipedia.service';
 import { MOCK_VILLAGERS } from './villagers.mock';
@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-villagers',
   standalone: true, // Asegúrate de tener esto si usas Angular moderno
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './villagers.component.html',
   styleUrl: './villagers.component.css',
 })
@@ -105,6 +105,13 @@ export class VillagersComponent implements OnInit, OnDestroy {
   nombreAplicado: string = '';
   especieAplicada: string = '';
 
+  /**
+   * Verificar si el usuario está logueado
+   */
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   buscar() {
     this.nombreAplicado = this.filtroNombre;
     this.especieAplicada = this.especieSeleccionada;
@@ -161,33 +168,10 @@ export class VillagersComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Verificar si el usuario está autenticado
-   */
-  isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
-  }
-
-  /**
    * Redirigir al login si no está autenticado
    */
   redirectToLogin(): void {
     this.router.navigate(['/login']);
-  }
-
-  /**
-   * Manejador de click del botón corazón
-   * Si no está logueado, redirige al login
-   * Si está logueado, agrega el aldeano
-   */
-  onHeartClick(v: any, event: Event): void {
-    event.stopPropagation();
-    
-    if (!this.isLoggedIn()) {
-      this.redirectToLogin();
-      return;
-    }
-
-    this.ponerAFavoritos(v);
   }
 
   /**

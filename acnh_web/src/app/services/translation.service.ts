@@ -555,33 +555,274 @@ export class TranslationService {
   // Método para traducir un coleccionable (peces, bichos, criaturas marinas)
   // Asumiendo campos comunes como 'location' si aplica, pero enfocándonos en básicos
   translateCollectible(collectible: any): any {
-    // Para collectibles, traducir 'location' si existe (ej. 'River' -> 'Río')
+    // 1. Función de limpieza avanzada
+    const cleanKey = (val: string) => {
+      if (!val) return '';
+      return val
+        .replace(/^\d+/, '') // Elimina números al principio (ej: "01 Common" -> "Common")
+        .trim(); // Elimina espacios y saltos de línea
+    };
+
+    const rarityMap: { [key: string]: string } = {
+  'Common': 'Común',
+  'Uncommon': 'Poco común',
+  'Rare': 'Raro',
+  'Ultra-rare': 'Ultra raro'
+};
+
+    // 2. Mapeos (Mantenemos los tuyos, están perfectos)
     const locationMap: { [key: string]: string } = {
+      Flying: 'Volando',
+      'Flying near flowers': 'Volando cerca de flores',
+      'Flying near blue, purple, and black flowers':
+        'Volando cerca de flores azules, moradas y negras',
+      'Flying near light sources': 'Volando cerca de fuentes de luz',
+      'Flying near water': 'Volando cerca del agua',
+      'Flying near trash or rotten turnips':
+        'Volando cerca de basura o nabos podridos',
+      'On the ground': 'En el suelo',
+      'On flowers': 'En las flores',
+      'On white flowers': 'En flores blancas',
+      'On trees (any kind)': 'En los árboles (cualquiera)',
+      'On trees (hardwood and cedar)': 'En árboles (frondosos y cedros)',
+      'On palm trees': 'En palmeras',
+      'On tree stumps': 'En tocones de árboles',
+      'On rivers and ponds': 'En ríos y estanques',
+      'On beach rocks': 'En rocas de la playa',
+      'On rocks and bushes': 'En rocas y arbustos',
+      'On villagers': 'En aldeanos',
+      Underground: 'Bajo tierra',
+      'From hitting rocks': 'Al golpear rocas',
+      'Shaking trees': 'Sacudiendo árboles',
+      'Shaking non-fruit hardwood trees or cedar trees':
+        'Sacudiendo árboles sin fruta',
+      'Pushing snowballs': 'Empujando bolas de nieve',
+      'Disguised under trees': 'Disfrazado bajo los árboles',
+      'Disguised on shoreline': 'Disfrazado en la orilla',
+      'On/near spoiled turnips/candy/lollipops':
+        'Cerca de nabos podridos o dulces',
       River: 'Río',
       Pond: 'Estanque',
+      'River (clifftop)': 'Río (cascada)',
+      'River (mouth)': 'Río (desembocadura)',
       Sea: 'Mar',
+      'Sea (raining)': 'Mar (lluvia)',
       Pier: 'Muelle',
-      Ocean: 'Océano',
-      'On the ground': 'En el suelo',
-      Flying: 'Volando',
-      Trees: 'Árboles',
-      Flowers: 'Flores',
-      Underground: 'Subterráneo',
-      Rocks: 'Rocas',
-      Trash: 'Basura',
-      'Villager heads': 'Cabezas de aldeanos',
-      Fossils: 'Fósiles',
-      'Money Rock': 'Roca de dinero',
-      'Any weather': 'Cualquier clima',
-      Rain: 'Lluvia',
-      'No rain': 'Sin lluvia',
-      // Agregar más según necesidad
     };
+
+    const weatherMap: { [key: string]: string } = {
+      'Any weather': 'Cualquier clima',
+      'Any except rain': 'Cualquiera excepto lluvia',
+      'Rain only': 'Solo con lluvia',
+      'No rain': 'Sin lluvia',
+    };
+
+    const shadowMap: { [key: string]: string } = {
+      'Tiny': 'Diminuta',
+      'Small': 'Pequeña',
+      'Medium': 'Mediana',
+      'Large': 'Grande',
+      'Very large': 'Muy grande',
+      'Very large (finned)': 'Muy grande (con aleta)',
+      'Huge': 'Gigante',
+      'Long & Thin': 'Larga y fina'
+    };
+
+    const nameMap: { [key: string]: string } = {
+      'Common butterfly': 'Mariposa común',
+      'Yellow butterfly': 'Mariposa amarilla',
+      'Tiger butterfly': 'Mariposa tigre',
+      'Peacock butterfly': 'Mariposa pavo real',
+      'Common bluebottle': 'Mariposa aspirante',
+      'Paper kite butterfly': 'Mariposa papel de arroz',
+      'Great purple emperor': 'Gran emperador púrpura',
+      'Monarch butterfly': 'Mariposa monarca',
+      'Emperor butterfly': 'Mariposa emperador',
+      'Agrias butterfly': 'Mariposa agrias',
+      "Rajah Brooke's birdwing": 'Alas de pájaro de Rajah Brooke',
+      "Queen Alexandra's birdwing": 'Alas de pájaro de la Reina Alexandra',
+      Moth: 'Polilla',
+      'Atlas moth': 'Polilla Atlas',
+      'Madagascan sunset moth': 'Polilla crepuscular',
+      'Long locust': 'Langosta alargada',
+      'Migratory locust': 'Langosta migratoria',
+      'Rice grasshopper': 'Saltamontes arroceros',
+      Grasshopper: 'Saltamontes',
+      Cricket: 'Grillo',
+      'Bell cricket': 'Grillo de campana',
+      Mantis: 'Mantis religiosa',
+      'Orchid mantis': 'Mantis orquídea',
+      Honeybee: 'Abeja mielera',
+      Wasp: 'Avispa',
+      'Brown cicada': 'Cigarra marrón',
+      'Robust cicada': 'Cigarra robusta',
+      'Giant cicada': 'Cigarra gigante',
+      'Walker cicada': 'Cigarra Walker',
+      'Evening cicada': 'Cigarra del atardecer',
+      'Cicada shell': 'Caparazón de cigarra',
+      'Red dragonfly': 'Libélula roja',
+      'Darner dragonfly': 'Libélula de Darwin',
+      'Banded dragonfly': 'Libélula tigre',
+      Damselfly: 'Caballito del diablo',
+      Firefly: 'Luciérnaga',
+      'Mole cricket': 'Alacrán cebollero',
+      Pondskater: 'Zapatero',
+      'Diving beetle': 'Ditisco',
+      'Giant water bug': 'Chinche acuática gigante',
+      Stinkbug: 'Chinche hedionda',
+      'Man-faced stink bug': 'Chinche con cara humana',
+      Ladybug: 'Mariquita',
+      'Tiger beetle': 'Escarabajo tigre',
+      'Jewel beetle': 'Buprestido',
+      'Violin beetle': 'Escarabajo violín',
+      'Citrus long-horned beetle': 'Escarabajo de cuernos largos',
+      'Rosalia batesi beetle': 'Escarabajo Rosalia Batesi',
+      'Blue weevil beetle': 'Gorgojo azul',
+      'Dung beetle': 'Escarabajo pelotero',
+      'Earth-boring dung beetle': 'Escarabajo geotrupo',
+      'Scarab beetle': 'Escarabajo sagrado',
+      'Drone beetle': 'Escarabajo de las flores',
+      'Goliath beetle': 'Escarabajo Goliat',
+      'Saw stag': 'Ciervo volante sierra',
+      'Miyama stag': 'Ciervo volante Miyama',
+      'Giant stag': 'Ciervo volante gigante',
+      'Rainbow stag': 'Ciervo volante arcoíris',
+      'Cyclommatus stag': 'Ciervo Cyclommatus',
+      'Golden stag': 'Ciervo volante dorado',
+      'Giraffe stag': 'Ciervo jirafa',
+      'Horned dynastid': 'Escarabajo rinoceronte',
+      'Horned atlas': 'Escarabajo Atlas',
+      'Horned elephant': 'Escarabajo elefante',
+      'Horned hercules': 'Escarabajo Hércules',
+      'Walking stick': 'Insecto palo',
+      'Walking leaf': 'Insecto hoja',
+      Bagworm: 'Oruga de zurrón',
+      Ant: 'Hormiga',
+      'Hermit crab': 'Cangrejo ermitaño',
+      'Wharf roach': 'Cochinilla de mar',
+      Fly: 'Mosca',
+      Mosquito: 'Mosquito',
+      Flea: 'Pulga',
+      Snail: 'Caracol',
+      'Pill bug': 'Cochinilla',
+      Centipede: 'Ciempiés',
+      Spider: 'Araña',
+      Tarantula: 'Tarántula',
+      Scorpion: 'Escorpión',
+      //Ahora Peces
+      'bitterling': 'Amarguillo',
+      'pale chub': 'Cacho',
+      'crucian carp': 'Carpa cruciana',
+      'dace': 'Leucisco',
+      'carp': 'Carpa',
+      'koi': 'Koi',
+      'goldfish': 'Pez dorado',
+      'pop-eyed goldfish': 'Telescópico',
+      'ranchu goldfish': 'Ranchu',
+      'killifish': 'Pez Medaka',
+      'crawfish': 'Cangrejo de río',
+      'soft-shelled turtle': 'Tortuga de caparazón blando',
+      'snapping turtle': 'Tortuga mordedora',
+      'tadpole': 'Renacuajo',
+      'frog': 'Rana',
+      'freshwater goby': 'Gobio de río',
+      'loach': 'Locha',
+      'catfish': 'Siluro',
+      'giant snakehead': 'Cabeza de serpiente',
+      'bluegill': 'Pez sol',
+      'yellow perch': 'Perca amarilla',
+      'black bass': 'Perca americana',
+      'tilapia': 'Tilapia',
+      'pike': 'Lucio',
+      'pond smelt': 'Eperlano',
+      'sweetfish': 'Ayu',
+      'cherry salmon': 'Salmón japonés',
+      'char': 'Trucha alpina',
+      'golden trout': 'Trucha dorada',
+      'stringfish': 'Taimén',
+      'salmon': 'Salmón',
+      'king salmon': 'Salmón real',
+      'mitten crab': 'Cangrejo de Shanghái',
+      'guppy': 'Guppy',
+      'nibble fish': 'Doctor pez',
+      'angelfish': 'Pez ángel',
+      'betta': 'Betta',
+      'neon tetra': 'Neón tetra',
+      'rainbowfish': 'Pez arcoíris',
+      'piranha': 'Piraña',
+      'arowana': 'Arowana',
+      'dorado': 'Dorado',
+      'gar': 'Pejelagarto',
+      'arapaima': 'Pirarucú',
+      'saddled bichir': 'Bichir ensillado',
+      'sturgeon': 'Esturión',
+      'sea butterfly': 'Mariposa marina',
+      'sea horse': 'Caballito de mar',
+      'clown fish': 'Pez payaso',
+      'surgeonfish': 'Pez cirujano',
+      'butterfly fish': 'Pez mariposa',
+      'napoleonfish': 'Pez napoleón',
+      'zebra turkeyfish': 'Pez león',
+      'blowfish': 'Pez globo fugu',
+      'puffer fish': 'Pez globo',
+      'anchovy': 'Boquerón',
+      'horse mackerel': 'Jurel',
+      'barred knifejaw': 'Dorada japonesa',
+      'sea bass': 'Lubina',
+      'red snapper': 'Pargo rojo',
+      'dab': 'Gallineta',
+      'olive flounder': 'Rodaballo',
+      'squid': 'Calamar',
+      'moray eel': 'Morena',
+      'ribbon eel': 'Anguila jardinera',
+      'tuna': 'Atún',
+      'blue marlin': 'Marlín azul',
+      'giant trevally': 'Jurel gigante',
+      'mahi-mahi': 'Mahi-mahi',
+      'ocean sunfish': 'Pez luna',
+      'ray': 'Raya',
+      'saw shark': 'Tiburón sierra',
+      'hammerhead shark': 'Cornuda',
+      'great white shark': 'Tiburón blanco',
+      'whale shark': 'Tiburón ballena',
+      'suckerfish': 'Rémora',
+      'football fish': 'Pez fútbol',
+      'oarfish': 'Pez remo',
+      'barreleye': 'Pez de cabeza transparente',
+      'coelacanth': 'Celacanto',
+    };
+
+    // Crear mapa insensible a mayúsculas para nameMap
+    const nameMapLower = Object.fromEntries(
+      Object.entries(nameMap).map(([k, v]) => [k.toLowerCase(), v]),
+    );
+
+
+
+    // Procesamos la traducción
+    const rawName = cleanKey(collectible.name);
+    const rawLocation = cleanKey(collectible.location);
+    const rawWeather = cleanKey(collectible.weather);
+    const rawShadow = cleanKey(collectible.shadow_size);
+    const rawRarity = cleanKey(collectible.rarity);
 
     return {
       ...collectible,
-      location: locationMap[collectible.location] || collectible.location,
-      // Otros campos si aplican, ej. rarity, etc.
+      // Intentamos traducir con la clave limpia (insensible a mayúsculas), si no, probamos con la original, si no, devolvemos original
+      name:
+        nameMapLower[rawName.toLowerCase()] ||
+        nameMapLower[collectible.name.toLowerCase()] ||
+        collectible.name,
+      location:
+        locationMap[rawLocation] ||
+        locationMap[collectible.location] ||
+        collectible.location,
+      weather:
+        weatherMap[rawWeather] ||
+        weatherMap[collectible.weather] ||
+        collectible.weather,
+      shadow_size: shadowMap[rawShadow] || collectible.shadow_size,
+      rarity: rarityMap[rawRarity] || collectible.rarity,
     };
   }
 

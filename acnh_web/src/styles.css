@@ -7,7 +7,9 @@
     /* Inicializamos las variables del servicio para que no den error si están vacías */
     --theme-color: #ffffff; 
     --inverse-theme-color: #1a1a1a;
+    --bs-form-select-color: var(--header-text) !important;
 }
+
 
 [data-bs-theme="dark"] {
     --bg-overlay: rgba(0, 0, 0, 0.7);

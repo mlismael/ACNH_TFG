@@ -1,1 +1,74 @@
-<p>login works!</p>
+<div class="login-container d-flex justify-content-center align-items-center">
+
+    @if (successMessage()) {
+    <div class="custom-alert shadow-sm d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-check-circle-fill me-2"></i>{{ successMessage() }}</span>
+        <button class="btn-close-alert" (click)="successMessage.set(null)">×</button>
+    </div>
+    }
+
+    <div class="card auth-card shadow-lg border-0">
+        <div class="card-body p-5">
+
+            <h2 class="text-center text-dark fw-bold mb-4 text-uppercase">
+                {{ isLoginMode() ? 'Acceso' : 'Registro' }}
+            </h2>
+
+            @if (isLoginMode()) {
+            <!-- Formulario de Login -->
+            <form (ngSubmit)="onLogin()">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">USUARIO</label>
+                    <input type="text" name="username" class="form-control ac-input" [(ngModel)]="loginData.username"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">CONTRASEÑA</label>
+                    <input type="password" name="password" class="form-control ac-input"
+                        [(ngModel)]="loginData.password" required>
+                </div>
+                <button type="submit" class="btn btn-ac-primary w-100 fw-bold">
+                    INICIAR SESIÓN
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="mb-0 small">
+                    ¿Aún no eres usuario?
+                    <a href="javascript:void(0)" (click)="toggleMode()" class="auth-link">Regístrate</a>
+                </p>
+            </div>
+
+            } @else {
+            <!-- Formulario de Registro -->
+            <form (ngSubmit)="onRegister()">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">USUARIO</label>
+                    <input type="text" name="username" class="form-control ac-input" [(ngModel)]="registerData.username"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">EMAIL</label>
+                    <input type="email" name="email" class="form-control ac-input" [(ngModel)]="registerData.email"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">CONTRASEÑA</label>
+                    <input type="password" name="password" class="form-control ac-input"
+                        [(ngModel)]="registerData.password" required>
+                </div>
+                <button type="submit" class="btn btn-ac-primary w-100 fw-bold">
+                    CREAR CUENTA
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="mb-0 small">
+                    ¿Ya tienes cuenta?
+                    <a href="javascript:void(0)" (click)="toggleMode()" class="auth-link">Inicia sesión</a>
+                </p>
+            </div>
+            }
+        </div>
+    </div>
+</div>

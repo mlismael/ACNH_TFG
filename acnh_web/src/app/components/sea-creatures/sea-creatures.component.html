@@ -1,1 +1,120 @@
-<p>sea-creatures works!</p>
+<div class="container-fluid px-4 py-5">
+
+    <div class="row g-3 mb-5 justify-content-center align-items-end">
+
+        <div class="col-12 col-md-4">
+            <label class="form-label small fw-bold ps-2"> <i class="bi bi-search"></i>NOMBRE</label>
+            <div class="search-box">
+                <input type="text" [(ngModel)]="filtroNombre" placeholder="Busca un pez..."
+                    class="form-control ac-input">
+            </div>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="form-label small fw-bold ps-2">
+                <i class="bi bi-sort-down"></i> ORDENAR POR
+            </label>
+            <select class="form-select ac-input" [(ngModel)]="ordenSeleccionado" (change)="ordenar()">
+                <option value="NUM_ASC">NUM ↑</option>
+                <option value="NUM_DESC">NUM ↓</option>
+                <option value="ASC">A-Z ↑</option>
+                <option value="DESC">Z-A ↓</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-2">
+            <button (click)="buscar()" class="btn btn-search w-100">
+                BUSCAR<i class="bi bi-search ms-1"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3">
+        @for (c of criaturasAMostrar; track c.name) {
+        <div class="col">
+            <div class="card villager-card h-100 border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 pt-3 pb-0 text-center">
+                    <h6 class="fw-bold mb-0 text-uppercase name-title">{{ c.name }}</h6>
+                </div>
+
+                <div class="img-container">
+                    <img [src]="c.image_url" [alt]="c.name" class="villager-img">
+                </div>
+
+                <div class="card-body pt-0">
+                    <div class="info-stack mt-3">
+
+                        <div class="info-block mb-2">
+                            <div class="label small fw-bold text-success">MOVIMIENTO</div>
+                            <div class="value">{{ c.shadow_movement }}</div>
+                        </div>
+
+                        <div class="info-block mb-2">
+                            <div class="label small fw-bold text-success">SOMBRA</div>
+                            <div class="value">{{ c.shadow_size }}</div>
+                        </div>
+
+                        <div class="info-block mb-2">
+                            <div class="label small fw-bold text-success">RAREZA</div>
+                            <div class="value">{{ c.rarity }}</div>
+                        </div>
+                        @if (c.north && c.north.availability_array) {
+                        <div class="info-block mb-2">
+                            <div class="label small fw-bold text-success">DISPONIBILIDAD (NORTE)</div>
+                            @for (av of c.north.availability_array; track av.months) {
+                            <div class="value small">
+                                {{ av.time === 'All day' ? 'Todo el día' : av.time }} |
+                                {{ av.months === 'All year' ? 'Todo el año' : av.months }}
+                            </div>
+                            }
+                        </div>
+                        }
+
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 position-relative pb-4" style="min-height: 50px;">
+
+                    <div class="position-absolute bottom-0 start-0 ps-3 pb-2">
+                        <span class="fw-bold text-muted small">Nº {{ c.number }}</span>
+                    </div>
+
+                    <div class="position-absolute bottom-0 end-0 pe-3 pb-2">
+                        @if (isLoggedIn) {
+                        <button class="btn-heart p-0 border-0 bg-transparent" [class.active]="esCriaturaAgregada(c.name)"
+                            (click)="ponerAFavoritos(c)" type="button">
+                            <i class="bi" [class.bi-star-fill]="esCriaturaAgregada(c.name)"
+                                [class.bi-star]="!esCriaturaAgregada(c.name)"></i>
+                        </button>
+                        } @else {
+                        <a [routerLink]="['/login']" class="btn-heart text-decoration-none" title="Inicia sesión">
+                            <i class="bi bi-star"></i>
+                        </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    @if (totalPaginas > 1) {
+    <div class="d-flex justify-content-center align-items-center mt-5 mb-5 gap-3">
+        <button class="btn btn-ac" [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="page-indicator px-4 py-2 shadow-sm">
+            <span class="small">Página</span>
+            <strong class="mx-2">{{ paginaActual }}</strong>
+            <span class=" small">de {{ totalPaginas }}</span>
+        </div>
+
+        <button class="btn btn-ac" [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(paginaActual + 1)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+
+    </div>
+    }
+</div>

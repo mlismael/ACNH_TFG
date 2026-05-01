@@ -1,0 +1,100 @@
+.login-container {
+    min-height: 80vh;
+    position: relative;
+}
+
+label,
+p {
+    color: #212529 !important;
+
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Un poco de transparencia para el fondo */
+    border-radius: 20px;
+}
+
+.ac-input {
+    border-radius: 10px;
+    border: 2px solid #eee;
+    padding: 10px 15px;
+}
+
+.ac-input:focus {
+    border-color: #BCAAA4;
+    box-shadow: none;
+}
+
+.btn-ac-primary {
+    background-color: #BCAAA4;
+    /* Tu marrón pastel */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.btn-ac-primary:hover {
+    background-color: #A1887F;
+    transform: scale(1.02);
+    color: white;
+}
+
+.auth-link {
+    color: #8D6E63;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+/* Estilo de la Alerta Personalizada */
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    background-color: #1B5E20;
+    /* Verde Bosque sugerido */
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    z-index: 1000;
+    min-width: 300px;
+    border-left: 5px solid #689F38;
+    /* Detalle en Verde Musgo */
+
+    /* Efecto de entrada */
+    animation: slideIn 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.btn-close-alert {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    margin-left: 15px;
+    opacity: 0.7;
+}
+
+.btn-close-alert:hover {
+    opacity: 1;
+}

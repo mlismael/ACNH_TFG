@@ -71,8 +71,7 @@ class UsuarioController
         require 'models/UsuarioModel.php';
         $modelo = new UsuarioModel();
 
-        $hashedPassword = password_hash($input['password'], PASSWORD_BCRYPT);
-        $ok = $modelo->crear($input['username'], $hashedPassword, $input['email']);
+        $ok = $modelo->crear($input['username'], $input['password'], $input['email']);
 
         if ($ok) {
             echo json_encode(['status' => 'success', 'message' => 'Usuario creado']);

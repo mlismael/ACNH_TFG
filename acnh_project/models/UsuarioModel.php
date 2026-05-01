@@ -63,34 +63,34 @@ class UsuarioModel
         return $gsent->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getByLogin($login)
+    public function getByLogin($username)
     {
         $gsent = $this->db->prepare('SELECT id, username, email, password, nombre_isla, fecha_registro, fecha_actualizacion, activo FROM USUARIO WHERE username = ?');
-        $gsent->bindParam(1, $login);
+        $gsent->bindParam(1, $username);
         $gsent->execute();
         return $gsent->fetch(PDO::FETCH_ASSOC);
     }
 
     // Método para autenticar un usuario
-    public function autenticar($login, $password): bool
+    public function autenticar($username, $password): bool
     {
-        $gsent = $this->db->prepare('SELECT * FROM USUARIO WHERE login = ? AND password = ?');
-        $gsent->bindParam(1, $login);
-        $password_encrypt = sha1($password);
-        $gsent->bindParam(2, $password_encrypt);
+        $gsent = $this->db->prepare('SELECT * FROM USUARIO WHERE username = ?');
+        $gsent->bindParam(1, $username);
         $gsent->execute();
-
-        $resultado = $gsent->fetch();
-        return ($resultado !== false);
+        $user = $gsent->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            return password_verify($password, $user['password']);
+        }
+        return false;
     }
 
     // Método para crear un nuevo usuario
-    public function crear($login, $password, $email): bool
+    public function crear($username, $password, $email): bool
     {
         try {
-            $password_encrypt = sha1($password);
-            $gsent = $this->db->prepare('INSERT INTO USUARIO (login, password, email) VALUES (?, ?, ?)');
-            $gsent->bindParam(1, $login);
+            $password_encrypt = password_hash($password, PASSWORD_BCRYPT);
+            $gsent = $this->db->prepare('INSERT INTO USUARIO (username, password, email) VALUES (?, ?, ?)');
+            $gsent->bindParam(1, $username);
             $gsent->bindParam(2, $password_encrypt);
             $gsent->bindParam(3, $email);
             return $gsent->execute();

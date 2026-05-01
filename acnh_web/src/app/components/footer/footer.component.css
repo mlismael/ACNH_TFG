@@ -1,0 +1,62 @@
+.custom-footer {
+    background-color: var(--theme-color) !important;
+    color: var(--header-text);
+    transition: all 0.4s ease;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.letter-spacing {
+    letter-spacing: 1.5px;
+}
+
+.footer-link {
+    color: var(--header-text) !important;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.footer-link:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+.footer-divider {
+    border-color: var(--header-text) !important;
+    opacity: 0.4;
+}
+
+.copyright {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+/* BOTÓN GITHUB ESTILO LOGIN */
+
+.btn-github {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--inverse-theme-color) !important;
+    color: var(--header-text) !important; /* Invertimos para que destaque */
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.a-name {
+    color: var(--header-text) !important;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 50px;
+}
+
+.a-name:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}

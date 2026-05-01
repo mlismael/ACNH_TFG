@@ -3,8 +3,8 @@
         <i class="bi" [class.bi-moon-fill]="!isDark()" [class.bi-sun-fill]="isDark()"></i>
     </button>
 
-    <div class="row g-0 justify-content-between align-items-center m-0 w-100">
-
+    <div class="row g-0 align-items-center m-0 w-100" [class.justify-content-center]="isLogin"
+        [class.justify-content-between]="!isLogin">
         <div class="col-12 col-md-4 align-items-center d-flex justify-content-center">
             <a routerLink="/" class="d-flex align-items-center text-decoration-none">
                 <img [src]="isDark() ? '/assets/acnh-dark-logo.png' : '/assets/acnh-light-logo_Nero_AI_Image_Upscaler_Photo.png'"
@@ -12,6 +12,7 @@
             </a>
         </div>
 
+        @if (!isLogin) {
         <div class="col-12 col-md-8">
             <nav class="navbar navbar-expand-md p-0">
                 <div class="container-fluid p-0 d-flex align-items-center">
@@ -24,7 +25,34 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
 
-                        <button class="btn btn-login-nav">Iniciar sesión</button>
+                        <!-- Lógica de Sesión -->
+                        @if (user$ | async; as user) {
+                        <!-- Si está logueado: Desplegable con el Username -->
+                        <div class="nav-item dropdown custom-user-dropdown">
+                            <a class="nav-link dropdown-toggle btn btn-login-nav d-flex align-items-center text-uppercase"
+                                role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li>
+                                    <a class="dropdown-item" [routerLink]="['/perfil-usuario']">
+                                        <i class="bi bi-person me-2"></i>Mi Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" (click)="logout()" style="cursor: pointer;">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        } @else {
+                        <!-- Si no está logueado: Botón de Iniciar sesión -->
+                        <a [routerLink]="['/login']" class="btn btn-login-nav">Iniciar sesión</a>
+                        }
                     </div>
 
                     <div class="collapse navbar-collapse justify-content-center order-md-1" id="navbarNavDropdown">
@@ -52,7 +80,6 @@
                 </div>
             </nav>
         </div>
+        }
     </div>
 </header>
-
-<!-- <a href="https://www.flaticon.es/iconos-gratis/leon" title="león iconos">León iconos creados por Freepik - Flaticon</a> -->

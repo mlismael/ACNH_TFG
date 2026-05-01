@@ -560,15 +560,16 @@ export class TranslationService {
       if (!val) return '';
       return val
         .replace(/^\d+/, '') // Elimina números al principio (ej: "01 Common" -> "Common")
-        .trim(); // Elimina espacios y saltos de línea
+        .trim() // Elimina espacios y saltos de línea
     };
 
     const rarityMap: { [key: string]: string } = {
-  'Common': 'Común',
-  'Uncommon': 'Poco común',
-  'Rare': 'Raro',
-  'Ultra-rare': 'Ultra raro'
-};
+      Common: 'Común',
+      Uncommon: 'Poco común',
+      'Very Common': 'Muy común',
+      Rare: 'Raro',
+      'Ultra-rare': 'Ultra raro',
+    };
 
     // 2. Mapeos (Mantenemos los tuyos, están perfectos)
     const locationMap: { [key: string]: string } = {
@@ -618,14 +619,23 @@ export class TranslationService {
     };
 
     const shadowMap: { [key: string]: string } = {
-      'Tiny': 'Diminuta',
-      'Small': 'Pequeña',
-      'Medium': 'Mediana',
-      'Large': 'Grande',
+      Tiny: 'Diminuta',
+      Small: 'Pequeña',
+      Medium: 'Mediana',
+      Large: 'Grande',
       'Very large': 'Muy grande',
       'Very large (finned)': 'Muy grande (con aleta)',
-      'Huge': 'Gigante',
-      'Long & Thin': 'Larga y fina'
+      Huge: 'Gigante',
+      'Long & Thin': 'Larga y fina',
+    };
+
+    const movementMap: { [key: string]: string } = {
+      Stationary: 'Estático',
+      'Very slow': 'Muy lento',
+      Slow: 'Lento',
+      Medium: 'Medio',
+      Fast: 'Rápido',
+      'Very fast': 'Muy rápido',
     };
 
     const nameMap: { [key: string]: string } = {
@@ -710,86 +720,127 @@ export class TranslationService {
       Tarantula: 'Tarántula',
       Scorpion: 'Escorpión',
       //Ahora Peces
-      'bitterling': 'Amarguillo',
+      bitterling: 'Amarguillo',
       'pale chub': 'Cacho',
       'crucian carp': 'Carpa cruciana',
-      'dace': 'Leucisco',
-      'carp': 'Carpa',
-      'koi': 'Koi',
-      'goldfish': 'Pez dorado',
+      dace: 'Leucisco',
+      carp: 'Carpa',
+      koi: 'Koi',
+      goldfish: 'Pez dorado',
       'pop-eyed goldfish': 'Telescópico',
       'ranchu goldfish': 'Ranchu',
-      'killifish': 'Pez Medaka',
-      'crawfish': 'Cangrejo de río',
+      killifish: 'Pez Medaka',
+      crawfish: 'Cangrejo de río',
       'soft-shelled turtle': 'Tortuga de caparazón blando',
       'snapping turtle': 'Tortuga mordedora',
-      'tadpole': 'Renacuajo',
-      'frog': 'Rana',
+      tadpole: 'Renacuajo',
+      frog: 'Rana',
       'freshwater goby': 'Gobio de río',
-      'loach': 'Locha',
-      'catfish': 'Siluro',
+      loach: 'Locha',
+      catfish: 'Siluro',
       'giant snakehead': 'Cabeza de serpiente',
-      'bluegill': 'Pez sol',
+      bluegill: 'Pez sol',
       'yellow perch': 'Perca amarilla',
       'black bass': 'Perca americana',
-      'tilapia': 'Tilapia',
-      'pike': 'Lucio',
+      tilapia: 'Tilapia',
+      pike: 'Lucio',
       'pond smelt': 'Eperlano',
-      'sweetfish': 'Ayu',
+      sweetfish: 'Ayu',
       'cherry salmon': 'Salmón japonés',
-      'char': 'Trucha alpina',
+      char: 'Trucha alpina',
       'golden trout': 'Trucha dorada',
-      'stringfish': 'Taimén',
-      'salmon': 'Salmón',
+      stringfish: 'Taimén',
+      salmon: 'Salmón',
       'king salmon': 'Salmón real',
       'mitten crab': 'Cangrejo de Shanghái',
-      'guppy': 'Guppy',
+      guppy: 'Guppy',
       'nibble fish': 'Doctor pez',
-      'angelfish': 'Pez ángel',
-      'betta': 'Betta',
+      angelfish: 'Pez ángel',
+      betta: 'Betta',
       'neon tetra': 'Neón tetra',
-      'rainbowfish': 'Pez arcoíris',
-      'piranha': 'Piraña',
-      'arowana': 'Arowana',
-      'dorado': 'Dorado',
-      'gar': 'Pejelagarto',
-      'arapaima': 'Pirarucú',
+      rainbowfish: 'Pez arcoíris',
+      piranha: 'Piraña',
+      arowana: 'Arowana',
+      dorado: 'Dorado',
+      gar: 'Pejelagarto',
+      arapaima: 'Pirarucú',
       'saddled bichir': 'Bichir ensillado',
-      'sturgeon': 'Esturión',
+      sturgeon: 'Esturión',
       'sea butterfly': 'Mariposa marina',
       'sea horse': 'Caballito de mar',
       'clown fish': 'Pez payaso',
-      'surgeonfish': 'Pez cirujano',
+      surgeonfish: 'Pez cirujano',
       'butterfly fish': 'Pez mariposa',
-      'napoleonfish': 'Pez napoleón',
+      napoleonfish: 'Pez napoleón',
       'zebra turkeyfish': 'Pez león',
-      'blowfish': 'Pez globo fugu',
+      blowfish: 'Pez globo fugu',
       'puffer fish': 'Pez globo',
-      'anchovy': 'Boquerón',
+      anchovy: 'Boquerón',
       'horse mackerel': 'Jurel',
       'barred knifejaw': 'Dorada japonesa',
       'sea bass': 'Lubina',
       'red snapper': 'Pargo rojo',
-      'dab': 'Gallineta',
+      dab: 'Gallineta',
       'olive flounder': 'Rodaballo',
-      'squid': 'Calamar',
+      squid: 'Calamar',
       'moray eel': 'Morena',
       'ribbon eel': 'Anguila jardinera',
-      'tuna': 'Atún',
+      tuna: 'Atún',
       'blue marlin': 'Marlín azul',
       'giant trevally': 'Jurel gigante',
       'mahi-mahi': 'Mahi-mahi',
       'ocean sunfish': 'Pez luna',
-      'ray': 'Raya',
+      ray: 'Raya',
       'saw shark': 'Tiburón sierra',
       'hammerhead shark': 'Cornuda',
       'great white shark': 'Tiburón blanco',
       'whale shark': 'Tiburón ballena',
-      'suckerfish': 'Rémora',
+      suckerfish: 'Rémora',
       'football fish': 'Pez fútbol',
-      'oarfish': 'Pez remo',
-      'barreleye': 'Pez de cabeza transparente',
-      'coelacanth': 'Celacanto',
+      oarfish: 'Pez remo',
+      barreleye: 'Pez de cabeza transparente',
+      coelacanth: 'Celacanto',
+      //Criaturas marinas
+      seaweed: 'Alga japonesa',
+      'sea grapes': 'Uva de mar',
+      'sea cucumber': 'Pepino de mar',
+      'sea pig': 'Cerdo de mar',
+      'sea star': 'Estrella de mar',
+      'sea urchin': 'Erizo de mar',
+      'slate pencil urchin': 'Erizo lápiz',
+      'sea anemone': 'Anémona de mar',
+      'moon jellyfish': 'Medusa de luna',
+      'sea slug': 'Babosa de mar',
+      'pearl oyster': 'Ostra perlera',
+      mussel: 'Mejillón',
+      oyster: 'Ostra',
+      scallop: 'Vieira',
+      whelk: 'Bucino',
+      'turban shell': 'Cañadilla',
+      abalone: 'Abulón',
+      'gigas giant clam': 'Almeja gigante',
+      'chambered nautilus': 'Nautilo',
+      octopus: 'Pulpo',
+      'umbrella octopus': 'Pulpo paraguas',
+      'vampire squid': 'Calamar vampiro',
+      'firefly squid': 'Calamar luciérnaga',
+      'gazami crab': 'Cangrejo de natación',
+      'dungeness crab': 'Cangrejo Dungeness',
+      'snow crab': 'Cangrejo de las nieves',
+      'red king crab': 'Cangrejo real',
+      'acorn barnacle': 'Balanos',
+      'spider crab': 'Cangrejo gigante japonés',
+      'tiger prawn': 'Langostino tigre',
+      'sweet shrimp': 'Camarón boreal',
+      'mantis shrimp': 'Galera',
+      'spiny lobster': 'Langosta espinosa',
+      lobster: 'Bogavante',
+      'giant isopod': 'Isópodo gigante',
+      'horseshoe crab': 'Cangrejo de herradura',
+      'sea pineapple': 'Piña de mar',
+      'spotted garden eel': 'Anguila jardinera',
+      flatworm: 'Planaria',
+      "venus' flower basket": 'Cesta de flores de Venus',
     };
 
     // Crear mapa insensible a mayúsculas para nameMap
@@ -797,18 +848,16 @@ export class TranslationService {
       Object.entries(nameMap).map(([k, v]) => [k.toLowerCase(), v]),
     );
 
-
-
     // Procesamos la traducción
     const rawName = cleanKey(collectible.name);
     const rawLocation = cleanKey(collectible.location);
     const rawWeather = cleanKey(collectible.weather);
     const rawShadow = cleanKey(collectible.shadow_size);
     const rawRarity = cleanKey(collectible.rarity);
+    const rawMovement = cleanKey(collectible.shadow_movement);
 
     return {
       ...collectible,
-      // Intentamos traducir con la clave limpia (insensible a mayúsculas), si no, probamos con la original, si no, devolvemos original
       name:
         nameMapLower[rawName.toLowerCase()] ||
         nameMapLower[collectible.name.toLowerCase()] ||
@@ -822,7 +871,9 @@ export class TranslationService {
         weatherMap[collectible.weather] ||
         collectible.weather,
       shadow_size: shadowMap[rawShadow] || collectible.shadow_size,
-      rarity: rarityMap[rawRarity] || collectible.rarity,
+      // CAMBIO AQUÍ: Aseguramos que rarity siempre tenga un valor, el mapeado o el limpio
+      rarity: rarityMap[rawRarity] || rawRarity || 'Común',
+      shadow_movement: movementMap[rawMovement] || collectible.shadow_movement,
     };
   }
 

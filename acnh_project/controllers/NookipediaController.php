@@ -105,31 +105,5 @@ class NookipediaController
         $this->respond(['status' => 'success', 'data' => $result['data']], $result['status']);
     }
 
-    public function buscarDetalle()
-    {
-        $this->setCorsHeaders();
-        require 'libs/NookipediaClient.php';
-
-        if (empty($_REQUEST['resource']) || empty($_REQUEST['name'])) {
-            $this->respond(['status' => 'error', 'message' => 'resource y name requeridos'], 400);
-        }
-
-        $resource = $_REQUEST['resource'];
-        $allowed = ['villagers', 'bugs', 'fish', 'sea-creatures'];
-        if (!in_array($resource, $allowed, true)) {
-            $this->respond(['status' => 'error', 'message' => 'resource inválido'], 400);
-        }
-
-        $params = ['name' => $_REQUEST['name']];
-        $client = new NookipediaClient();
-        $endpoint = ($resource === 'villagers') ? '/' . $resource : '/nh/' . $resource;
-        $result = $client->get($endpoint, $params);
-
-        if (isset($result['error'])) {
-            $this->respond(['status' => 'error', 'message' => $result['error']], 500);
-        }
-
-        $this->respond(['status' => 'success', 'data' => $result['data']], $result['status']);
-    }
 }
 ?>

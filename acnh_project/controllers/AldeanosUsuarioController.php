@@ -15,40 +15,6 @@ class AldeanosUsuarioController
         }
     }
 
-    public function listar()
-    {
-        $this->setCorsHeaders();
-        require 'models/AldeanosUsuarioModel.php';
-
-        $modelo = new AldeanosUsuarioModel();
-        $items = $modelo->getAll();
-
-        echo json_encode(['status' => 'success', 'data' => $items]);
-    }
-
-    public function ver()
-    {
-        $this->setCorsHeaders();
-
-        if (empty($_REQUEST['id'])) {
-            http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
-            exit;
-        }
-
-        require 'models/AldeanosUsuarioModel.php';
-        $modelo = new AldeanosUsuarioModel();
-        $item = $modelo->getById($_REQUEST['id']);
-
-        if (!$item) {
-            http_response_code(404);
-            echo json_encode(['status' => 'error', 'message' => 'No encontrado']);
-            exit;
-        }
-
-        echo json_encode(['status' => 'success', 'data' => $item]);
-    }
-
     public function listarPorUsuario()
     {
         $this->setCorsHeaders();
@@ -64,23 +30,6 @@ class AldeanosUsuarioController
         $items = $modelo->getByIdUsuario($_REQUEST['id_usuario']);
 
         echo json_encode(['status' => 'success', 'data' => $items]);
-    }
-
-    public function contarPorUsuario()
-    {
-        $this->setCorsHeaders();
-
-        if (empty($_REQUEST['id_usuario'])) {
-            http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'id_usuario requerido']);
-            exit;
-        }
-
-        require 'models/AldeanosUsuarioModel.php';
-        $modelo = new AldeanosUsuarioModel();
-        $total = $modelo->contarPorUsuario($_REQUEST['id_usuario']);
-
-        echo json_encode(['status' => 'success', 'data' => ['total' => $total]]);
     }
 
     public function crear()
@@ -105,8 +54,8 @@ class AldeanosUsuarioController
         require 'models/AldeanosUsuarioModel.php';
         $modelo = new AldeanosUsuarioModel();
         $ok = $modelo->crear(
-            $input['id_usuario'], 
-            $input['id_api'], 
+            $input['id_usuario'],
+            $input['id_api'],
             $input['url_api'] ?? '',
             $input['nombre_aldeano'],
             $input['imagen_aldeano'] ?? '',
@@ -121,60 +70,31 @@ class AldeanosUsuarioController
         }
     }
 
-    public function actualizar()
-    {
-        $this->setCorsHeaders();
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
-            exit;
-        }
-
-        if (empty($_REQUEST['id'])) {
-            http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
-            exit;
-        }
-
-        $input = json_decode(file_get_contents('php://input'), true);
-
-        require 'models/AldeanosUsuarioModel.php';
-        $modelo = new AldeanosUsuarioModel();
-        $ok = $modelo->actualizar(
-            $_REQUEST['id'],
-            $input['id_api'] ?? null,
-            $input['url_api'] ?? '',
-            $input['nombre_aldeano'] ?? '',
-            $input['imagen_aldeano'] ?? '',
-            $input['personalidad'] ?? ''
-        );
-
-        if ($ok) {
-            echo json_encode(['status' => 'success', 'message' => 'Aldeano actualizado']);
-        } else {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Error al actualizar']);
-        }
-    }
-
     public function eliminar()
     {
         $this->setCorsHeaders();
-        if (empty($_REQUEST['id'])) {
+
+        // Recogemos los nuevos parámetros
+        $id_usuario = $_REQUEST['id_usuario'] ?? null;
+        $id_api = $_REQUEST['id_api'] ?? null;
+
+        // Validamos que ambos existan
+        if (empty($id_usuario) || empty($id_api)) {
             http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
+            echo json_encode(['status' => 'error', 'message' => 'Usuario e ID de API requeridos']);
             exit;
         }
 
         require 'models/AldeanosUsuarioModel.php';
         $modelo = new AldeanosUsuarioModel();
 
-        if ($modelo->eliminar($_REQUEST['id'])) {
-            echo json_encode(['status' => 'success', 'message' => 'Aldeano eliminado']);
+        // Enviamos ambos al modelo
+        if ($modelo->eliminar($id_usuario, $id_api)) {
+            echo json_encode(['status' => 'success', 'message' => 'Aldeano eliminado de favoritos']);
         } else {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Error al eliminar']);
+            // Si no se borró nada, puede ser que la relación no existiera
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => 'No se encontró el aldeano para este usuario']);
         }
     }
 }
-?>

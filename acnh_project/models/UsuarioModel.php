@@ -50,14 +50,14 @@ class UsuarioModel
 
     public function getAll()
     {
-        $consulta = $this->db->prepare('SELECT id, username, email, nombre_isla, fecha_registro, fecha_actualizacion, activo FROM USUARIO');
+        $consulta = $this->db->prepare('SELECT id, username, email, img_perfil, nombre_isla, color_tema, fecha_registro, fecha_actualizacion, activo FROM USUARIO');
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getById($id)
     {
-        $gsent = $this->db->prepare('SELECT id, username, email, nombre_isla, fecha_registro, fecha_actualizacion, activo FROM USUARIO WHERE id = ?');
+        $gsent = $this->db->prepare('SELECT id, username, email, img_perfil, nombre_isla, color_tema, fecha_registro, fecha_actualizacion, activo FROM USUARIO WHERE id = ?');
         $gsent->bindParam(1, $id);
         $gsent->execute();
         return $gsent->fetch(PDO::FETCH_ASSOC);
@@ -65,7 +65,7 @@ class UsuarioModel
 
     public function getByLogin($username)
     {
-        $gsent = $this->db->prepare('SELECT id, username, email, password, nombre_isla, fecha_registro, fecha_actualizacion, activo FROM USUARIO WHERE username = ?');
+        $gsent = $this->db->prepare('SELECT id, username, email, img_perfil, password, nombre_isla, color_tema, fecha_registro, fecha_actualizacion, activo FROM USUARIO WHERE username = ?');
         $gsent->bindParam(1, $username);
         $gsent->execute();
         return $gsent->fetch(PDO::FETCH_ASSOC);
@@ -99,6 +99,27 @@ class UsuarioModel
         }
     }
 
+    // Método para comprobar si un usuario o email ya existen
+    public function existeUsuario($username, $email): bool
+    {
+        try {
+            $gsent = $this->db->prepare('SELECT id FROM USUARIO WHERE username = ? OR email = ? LIMIT 1');
+            $gsent->bindParam(1, $username);
+            $gsent->bindParam(2, $email);
+            $gsent->execute();
+
+            $resultado = $gsent->fetch(PDO::FETCH_ASSOC);
+
+            // Si $resultado es false, no encontró nada. Si tiene un array, es que ya existe.
+            return $resultado !== false;
+        } catch (Exception $e) {
+            // En caso de error de conexión/sintaxis, asumimos que no se debe proceder
+            // Puedes registrar el log del error aquí si tienes un sistema de logs
+            return true;
+        }
+    }
+
+    // Método para actualizar datos del usuario
     // Método para actualizar datos del usuario
     public function actualizar($id, $updateData): bool
     {
@@ -107,10 +128,9 @@ class UsuarioModel
                 return false;
             }
 
-            // Construir dinámicamente la consulta UPDATE
             $campos = [];
             $valores = [];
-            
+
             if (isset($updateData['username'])) {
                 $campos[] = 'username = ?';
                 $valores[] = $updateData['username'];
@@ -119,31 +139,39 @@ class UsuarioModel
                 $campos[] = 'email = ?';
                 $valores[] = $updateData['email'];
             }
+            if (isset($updateData['img_perfil'])) {
+                $campos[] = 'img_perfil = ?';
+                $valores[] = $updateData['img_perfil'];
+            }
             if (isset($updateData['nombre_isla'])) {
                 $campos[] = 'nombre_isla = ?';
                 $valores[] = $updateData['nombre_isla'];
+            }
+            if (isset($updateData['color_tema'])) {
+                $campos[] = 'color_tema = ?';
+                $valores[] = $updateData['color_tema'];
+            }
+            if (isset($updateData['password'])) {
+                $campos[] = 'password = ?';
+                $valores[] = password_hash($updateData['password'], PASSWORD_BCRYPT);
             }
 
             if (empty($campos)) {
                 return false;
             }
 
-            // Agregar fecha de actualización
             $campos[] = 'fecha_actualizacion = NOW()';
             $valores[] = $id;
 
             $sql = 'UPDATE USUARIO SET ' . implode(', ', $campos) . ' WHERE id = ?';
             $gsent = $this->db->prepare($sql);
-            
-            // Vincular parámetros
-            for ($i = 0; $i < count($valores); $i++) {
-                $gsent->bindParam($i + 1, $valores[$i]);
-            }
 
-            return $gsent->execute();
+            // Ejecución limpia directa con el array
+            return $gsent->execute($valores);
         } catch (Exception $e) {
+            // Se registra el error silenciosamente en el log del servidor
+            error_log("Error BD al actualizar usuario: " . $e->getMessage());
             return false;
         }
     }
 }
-?>

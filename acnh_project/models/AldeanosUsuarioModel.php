@@ -20,29 +20,77 @@ class AldeanosUsuarioModel
     }
 
     // Getters y setters
-    public function getId() { return $this->id; }
-    public function setId($id) { $this->id = $id; }
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-    public function getIdUsuario() { return $this->id_usuario; }
-    public function setIdUsuario($id_usuario) { $this->id_usuario = $id_usuario; }
+    public function getIdUsuario()
+    {
+        return $this->id_usuario;
+    }
+    public function setIdUsuario($id_usuario)
+    {
+        $this->id_usuario = $id_usuario;
+    }
 
-    public function getIdApi() { return $this->id_api; }
-    public function setIdApi($id_api) { $this->id_api = $id_api; }
+    public function getIdApi()
+    {
+        return $this->id_api;
+    }
+    public function setIdApi($id_api)
+    {
+        $this->id_api = $id_api;
+    }
 
-    public function getUrlApi() { return $this->url_api; }
-    public function setUrlApi($url_api) { $this->url_api = $url_api; }
+    public function getUrlApi()
+    {
+        return $this->url_api;
+    }
+    public function setUrlApi($url_api)
+    {
+        $this->url_api = $url_api;
+    }
 
-    public function getNombreAldeano() { return $this->nombre_aldeano; }
-    public function setNombreAldeano($nombre_aldeano) { $this->nombre_aldeano = $nombre_aldeano; }
+    public function getNombreAldeano()
+    {
+        return $this->nombre_aldeano;
+    }
+    public function setNombreAldeano($nombre_aldeano)
+    {
+        $this->nombre_aldeano = $nombre_aldeano;
+    }
 
-    public function getImagenAldeano() { return $this->imagen_aldeano; }
-    public function setImagenAldeano($imagen_aldeano) { $this->imagen_aldeano = $imagen_aldeano; }
+    public function getImagenAldeano()
+    {
+        return $this->imagen_aldeano;
+    }
+    public function setImagenAldeano($imagen_aldeano)
+    {
+        $this->imagen_aldeano = $imagen_aldeano;
+    }
 
-    public function getPersonalidad() { return $this->personalidad; }
-    public function setPersonalidad($personalidad) { $this->personalidad = $personalidad; }
+    public function getPersonalidad()
+    {
+        return $this->personalidad;
+    }
+    public function setPersonalidad($personalidad)
+    {
+        $this->personalidad = $personalidad;
+    }
 
-    public function getFechaIncorporacion() { return $this->fecha_incorporacion; }
-    public function setFechaIncorporacion($fecha_incorporacion) { $this->fecha_incorporacion = $fecha_incorporacion; }
+    public function getFechaIncorporacion()
+    {
+        return $this->fecha_incorporacion;
+    }
+    public function setFechaIncorporacion($fecha_incorporacion)
+    {
+        $this->fecha_incorporacion = $fecha_incorporacion;
+    }
 
     // Métodos de BD
     public function getAll()
@@ -115,15 +163,25 @@ class AldeanosUsuarioModel
         }
     }
 
-    public function eliminar($id)
+    public function eliminar($id_usuario, $id_api)
     {
         try {
-            $gsent = $this->db->prepare('DELETE FROM ALDEANOS_USUARIO WHERE id = ?');
-            $gsent->bindParam(1, $id);
-            return $gsent->execute();
+            // Cambiamos la consulta para validar ambos campos
+            $sql = 'DELETE FROM ALDEANOS_USUARIO WHERE id_usuario = ? AND id_api = ?';
+            $gsent = $this->db->prepare($sql);
+
+            // Vinculamos los dos parámetros
+            $gsent->bindParam(1, $id_usuario);
+            $gsent->bindParam(2, $id_api);
+
+            $gsent->execute();
+
+            // Es buena práctica retornar true solo si realmente se borró algo
+            // rowCount() nos dice cuántas filas se eliminaron
+            return $gsent->rowCount() > 0;
         } catch (Exception $e) {
+            // Opcional: puedes registrar el error $e->getMessage() para debug
             return false;
         }
     }
 }
-?>

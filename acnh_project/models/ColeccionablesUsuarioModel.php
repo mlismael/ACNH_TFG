@@ -69,15 +69,21 @@ class ColeccionablesUsuarioModel
         }
     }
 
-    public function eliminar($id)
+    public function eliminar($id_usuario, $id_api)
     {
         try {
-            $gsent = $this->db->prepare('DELETE FROM COLECCIONABLES_USUARIO WHERE id = ?');
-            $gsent->bindParam(1, $id);
-            return $gsent->execute();
+            // Borramos solo si coinciden el dueño y el item
+            $sql = 'DELETE FROM COLECCIONABLES_USUARIO WHERE id_usuario = ? AND id_api = ?';
+            $gsent = $this->db->prepare($sql);
+
+            // Ejecutamos pasando ambos parámetros
+            $gsent->execute([$id_usuario, $id_api]);
+
+            // Retornamos true si realmente se borró una fila
+            return $gsent->rowCount() > 0;
         } catch (Exception $e) {
+            error_log("Error al eliminar coleccionable: " . $e->getMessage());
             return false;
         }
     }
 }
-?>

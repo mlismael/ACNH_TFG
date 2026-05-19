@@ -15,37 +15,6 @@ class ColeccionablesUsuarioController
         }
     }
 
-    public function listar()
-    {
-        $this->setCorsHeaders();
-        require 'models/ColeccionablesUsuarioModel.php';
-        $modelo = new ColeccionablesUsuarioModel();
-        echo json_encode(['status' => 'success', 'data' => $modelo->getAll()]);
-    }
-
-    public function ver()
-    {
-        $this->setCorsHeaders();
-
-        if (empty($_REQUEST['id'])) {
-            http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
-            exit;
-        }
-
-        require 'models/ColeccionablesUsuarioModel.php';
-        $modelo = new ColeccionablesUsuarioModel();
-        $item = $modelo->getById($_REQUEST['id']);
-
-        if (!$item) {
-            http_response_code(404);
-            echo json_encode(['status' => 'error', 'message' => 'No encontrado']);
-            exit;
-        }
-
-        echo json_encode(['status' => 'success', 'data' => $item]);
-    }
-
     public function listarPorUsuario()
     {
         $this->setCorsHeaders();
@@ -99,61 +68,29 @@ class ColeccionablesUsuarioController
         }
     }
 
-    public function actualizar()
-    {
-        $this->setCorsHeaders();
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
-            exit;
-        }
-
-        if (empty($_REQUEST['id'])) {
-            http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
-            exit;
-        }
-
-        $input = json_decode(file_get_contents('php://input'), true);
-        require 'models/ColeccionablesUsuarioModel.php';
-        $modelo = new ColeccionablesUsuarioModel();
-
-        $ok = $modelo->actualizar(
-            $_REQUEST['id'],
-            $input['id_tipo'] ?? 0,
-            $input['id_api'] ?? 0,
-            $input['nombre'] ?? '',
-            $input['imagen'] ?? ''
-        );
-
-        if ($ok) {
-            echo json_encode(['status' => 'success', 'message' => 'Coleccionable actualizado']);
-        } else {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Error al actualizar']);
-        }
-    }
-
     public function eliminar()
     {
         $this->setCorsHeaders();
 
-        if (empty($_REQUEST['id'])) {
+        // Recogemos los parámetros de identificación única
+        $id_usuario = $_REQUEST['id_usuario'] ?? null;
+        $id_api = $_REQUEST['id_api'] ?? null;
+
+        if (empty($id_usuario) || empty($id_api)) {
             http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
+            echo json_encode(['status' => 'error', 'message' => 'Usuario e ID de API requeridos']);
             exit;
         }
 
         require 'models/ColeccionablesUsuarioModel.php';
         $modelo = new ColeccionablesUsuarioModel();
 
-        if ($modelo->eliminar($_REQUEST['id'])) {
+        // Intentamos eliminar basándonos en la relación
+        if ($modelo->eliminar($id_usuario, $id_api)) {
             echo json_encode(['status' => 'success', 'message' => 'Coleccionable eliminado']);
         } else {
-            http_response_code(500);
-            echo json_encode(['status' => 'error', 'message' => 'Error al eliminar']);
+            http_response_code(404);
+            echo json_encode(['status' => 'error', 'message' => 'No se encontró el registro para este usuario']);
         }
     }
 }
-?>

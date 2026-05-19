@@ -5,7 +5,7 @@ class UsuarioController
     private function setCorsHeaders()
     {
         header('Access-Control-Allow-Origin: http://localhost:4200');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
         header('Access-Control-Allow-Credentials: true');
 
@@ -13,15 +13,6 @@ class UsuarioController
             http_response_code(204);
             exit;
         }
-    }
-
-    public function listar()
-    {
-        $this->setCorsHeaders();
-
-        require 'models/UsuarioModel.php';
-        $modelo = new UsuarioModel();
-        echo json_encode(['status' => 'success', 'data' => $modelo->getAll()]);
     }
 
     public function ver()
@@ -34,7 +25,7 @@ class UsuarioController
             exit;
         }
 
-        require 'models/UsuarioModel.php';
+        require_once 'models/UsuarioModel.php';
         $modelo = new UsuarioModel();
         $user = $modelo->getById($_REQUEST['id']);
 
@@ -68,8 +59,16 @@ class UsuarioController
             }
         }
 
-        require 'models/UsuarioModel.php';
+
+        require_once 'models/UsuarioModel.php';
         $modelo = new UsuarioModel();
+
+        if ($modelo->existeUsuario($input['username'], $input['email'])) {
+            http_response_code(409); // 409 Conflict es ideal para registros duplicados
+            echo json_encode(['status' => 'error', 'message' => 'El nombre de usuario o email ya están registrados']);
+            exit;
+        }
+
 
         $ok = $modelo->crear($input['username'], $input['password'], $input['email']);
 
@@ -102,7 +101,7 @@ class UsuarioController
             }
         }
 
-        require 'models/UsuarioModel.php';
+        require_once 'models/UsuarioModel.php';
         $modelo = new UsuarioModel();
 
         // Obtener usuario por username
@@ -137,7 +136,7 @@ class UsuarioController
     {
         $this->setCorsHeaders();
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if (!in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PATCH'])) {
             http_response_code(405);
             echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
             exit;
@@ -151,7 +150,7 @@ class UsuarioController
 
         $input = json_decode(file_get_contents('php://input'), true);
 
-        require 'models/UsuarioModel.php';
+        require_once 'models/UsuarioModel.php';
         $modelo = new UsuarioModel();
 
         // Preparar datos a actualizar
@@ -162,8 +161,17 @@ class UsuarioController
         if (!empty($input['email'])) {
             $updateData['email'] = $input['email'];
         }
+        if (!empty($input['img_perfil'])) {
+            $updateData['img_perfil'] = $input['img_perfil'];
+        }
         if (!empty($input['nombre_isla'])) {
             $updateData['nombre_isla'] = $input['nombre_isla'];
+        }
+        if (!empty($input['color_tema'])) {
+            $updateData['color_tema'] = $input['color_tema'];
+        }
+        if (!empty($input['password'])) {
+            $updateData['password'] = $input['password'];
         }
 
         if (empty($updateData)) {
@@ -182,4 +190,3 @@ class UsuarioController
         }
     }
 }
-?>

@@ -5,6 +5,7 @@ import { BugsComponent } from './components/bugs/bugs.component';
 import { FishComponent } from './components/fish/fish.component';
 import { SeaCreaturesComponent } from './components/sea-creatures/sea-creatures.component';
 import { LoginComponent } from './components/login/login.component';
+import { PerfilUsuarioComponent } from './components/perfil-usuario/perfil-usuario.component';
 
 export const routes: Routes = [
     {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -14,5 +15,5 @@ export const routes: Routes = [
     {path: 'fishes', component: FishComponent},
     {path: 'seacreatures', component: SeaCreaturesComponent},
     {path: 'login', component: LoginComponent},
-
+    {path: 'perfil-usuario', component: PerfilUsuarioComponent},
 ];

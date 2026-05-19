@@ -1,0 +1,439 @@
+/* ── Variables ── */
+.perfil-wrapper {
+    --radius: 16px;
+    --border: 1px solid #e8e8e0;
+    --label-size: 0.7rem;
+    --muted: #aaa;
+    padding: 1.5rem 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* ── Layout ── */
+.perfil-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* ── Panel izquierdo ── */
+.panel-perfil {
+    background: #fff;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.avatar-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 3px solid var(--color-usuario, #ccc);
+    display: block;
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+}
+
+.user-username {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.user-email {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.user-fields {
+    width: 100%;
+}
+
+.field-row {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f0f0e8;
+}
+
+.field-row:last-child {
+    border-bottom: none;
+}
+
+.field-label {
+    font-size: var(--label-size);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 2px;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: #333;
+}
+
+/* ── Panel derecho ── */
+.panel-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.isla-titulo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0e8;
+}
+
+/* ── Secciones ── */
+section {
+    background-color: #ffffffad;
+    border-radius: var(--radius);
+    padding: 10px;
+}
+
+.coleccion-seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.seccion-titulo {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+}
+
+.seccion-icono {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.aldeanos-icono {
+    background: #9edbf5;
+}
+
+.bichos-icono {
+    background: #a8e6a3;
+}
+
+.peces-icono {
+    background: #7ec8e3;
+}
+
+.marinas-icono {
+    background: #5bb8a8;
+}
+
+/* ── Grid y items: compartido por colección Y formulario ── */
+.coleccion-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 0.75rem;
+}
+
+.coleccion-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* ── foto-wrap: contenedor circular base ── */
+/* Usado en colección (div) y en formulario (button) */
+.foto-wrap {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* Anillo exterior en hover y en seleccionado */
+.foto-wrap::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    transition: border-color 0.15s;
+    pointer-events: none;
+}
+
+.foto-wrap:hover::after {
+    border-color: #bbb;
+}
+
+.foto-wrap.seleccionado::after {
+    border-color: #999;
+}
+
+/* Overlay con X para colección */
+.foto-wrap:hover .item-overlay {
+    opacity: 1;
+}
+
+/* ── Foto circular ── */
+.item-foto {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    background: #f0f0e8;
+    display: block;
+    border: var(--border);
+}
+
+/* ── Color btn: foto-wrap relleno de color ── */
+.color-btn {
+    border-radius: 50%;
+    background: var(--c, #eee);
+    border: var(--border);
+}
+
+
+/* ── Overlay con X ── */
+.item-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .55);
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.btn-eliminar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #666;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.1s;
+}
+
+.btn-eliminar:hover {
+    color: #333;
+}
+
+.item-nombre {
+    font-size: 0.68rem;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 64px;
+}
+
+.empty-msg {
+    font-size: 0.8rem;
+    color: #bbb;
+    font-style: italic;
+    margin: 0;
+}
+
+/* ── Botones acción ── */
+.btn-editar,
+.btn-cancelar,
+.btn-guardar {
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-editar,
+.btn-cancelar {
+    border: 1.5px solid #d0d0c8;
+    background-color: var(--color-usuario, transparent);
+    color: #444;
+}
+
+.btn-editar {
+    width: 100%;
+    margin-top: 0.25rem;
+}
+
+.btn-cancelar {
+    color: #666;
+}
+
+.btn-editar:hover,
+.btn-cancelar:hover {
+    background: #f5f5f0;
+    border-color: #aaa;
+}
+
+.btn-guardar {
+    border: none;
+    background: #2a2a2a;
+    font-weight: 600;
+    color: #fff;
+}
+
+.btn-guardar:hover {
+    background: #111;
+}
+
+/* ── Formulario edición ── */
+.form-edicion {
+    background: #fff;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-titulo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.form-seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-size: var(--label-size);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #d8d8d0;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: #222;
+    background: #fafaf8;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+}
+
+.form-input::placeholder {
+    color: #bbb;
+}
+
+.form-input:focus {
+    border-color: #888;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, .06);
+    background: #fff;
+}
+
+.input-password-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-password-wrap .form-input {
+    padding-right: 2.5rem;
+}
+
+.btn-ojo {
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.15s;
+}
+
+.btn-ojo:hover {
+    color: #555;
+}
+
+.form-acciones {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .perfil-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-perfil {
+        position: static;
+    }
+}
+
+/* Cuando llegamos a tamaño móvil o tablet pequeña, bajamos directamente a 2 columnas (pares) */
+@media (max-width: 640px) {
+    .coleccion-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .form-acciones {
+        flex-direction: column-reverse;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+        width: 100%;
+        text-align: center;
+    }
+}

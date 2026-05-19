@@ -1,1 +1,123 @@
-<p>home works!</p>
+<div class="container-fluid px-4 py-5">
+    <div class="row g-3 mb-5 justify-content-center align-items-center">
+        <div class="col-12 col-md-8 text-center">
+            <h1 class="display-4">¡Bienvenido a tu guía de Animal Crossing!</h1>
+            <p class="mt-3">Explora, organiza y disfruta de todo lo que el mundo de Animal Crossing tiene para ofrecer.
+            </p>
+            <a [routerLink]="['/fishes']" class="btn btn-login-nav btn-lg mt-4">
+                Explorar Peces <i class="bi bi-chevron-right ms-2"></i>
+            </a>
+
+            <div class="card mt-5 shadow-sm border-0 bg-transparent px-2 py-1">
+                <div class="card-body mt-3">
+                    <i class="bi bi-patch-question-fill display-6 mb-3" style="color: var(--inverse-theme-color);"></i>
+                    <h6 class="card-title my-3">¿Nuevo en Animal Crossing?</h6>
+                    <p class="card-text">Animal Crossing: New Horizons es el rincón perfecto para escapar de la rutina y
+                        abrazar la calma absoluta. Se trata de un lienzo en blanco insular donde el tiempo transcurre
+                        sin prisas. Aquí no hay presiones ni misiones contrarreloj, solo la
+                        maravillosa oportunidad de crear un hogar súper cozy desde cero y disfrutar de la tranquilidad
+                        del momento presente.
+                        <br><br>
+                        El ritmo de vida fluye de forma natural, regalando total libertad para disfrutar de los pequeños
+                        detalles diarios, pasear por la playa al atardecer,
+                        coleccionar todo tipo de peces y bichos, o bucear en busca de criaturas marinas se convierte en
+                        un ritual relajante y muy gratificante. Si a esto se le suma la posibilidad de decorar cada
+                        centímetro del terreno y forjar amistad con los entrañables vecinos, el resultado es
+                        una experiencia inigualable que transmite pura paz.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <h4 class="card-title my-3 fw-semibold"><i class="bi bi-leaf-fill me-2"></i>Echa un vistazo al mundo
+                    ACNH</h4>
+                <div class="card shadow-sm border-0 bg-transparent p-3">
+                    <video class="w-100 " controls controlsList="nodownload" oncontextmenu="return false;"
+                        preload="none" poster="/assets/portada-video.JPG">
+                        <source src="/assets/autovideo.mp4" type="video/mp4">
+                        Tu navegador no soporta la etiqueta de video.
+                    </video>
+                </div>
+                <p class="text-uppercase"></p>
+            </div>
+
+            <div class="mt-5 px-2">
+                <h4 class="card-title my-3 fw-semibold">
+                    <i class="bi bi-stars me-2"></i>Eventos de ACNH
+                </h4>
+
+                <div class="card calendario-contenedor" [class.vista-semanal]="!vistaMensual()">
+
+                    <!-- ── Cabecera ── -->
+                    <div class="calendario-cabecera">
+
+                        <!-- Izquierda: flechas + mes -->
+                        <div class="cal-nav">
+                            <button class="btn-mes" (click)="cambiarPeriodo(-1)" aria-label="Anterior">&#8249;</button>
+                            <span class="cal-mes-label">{{ nombreMes() }}</span>
+                            <button class="btn-mes" (click)="cambiarPeriodo(1)" aria-label="Siguiente">&#8250;</button>
+                        </div>
+
+                        <!-- Derecha: toggle pill -->
+                        <div class="cal-toggle">
+                            <button class="toggle-btn" [class.activo]="vistaMensual()"
+                                (click)="toggleVista()">Mes</button>
+                            <button class="toggle-btn" [class.activo]="!vistaMensual()"
+                                (click)="toggleVista()">Semana</button>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Días de la semana ── -->
+                    <div class="calendario-grid cabecera-dias">
+                        @for (dia of diasSemana; track dia) {
+                        <div class="dia-semana">{{ dia }}</div>
+                        }
+                    </div>
+
+                    <!-- ── Cuadrícula ── -->
+                    <div class="calendario-grid">
+                        @for (dia of calendarDaysVisible(); track $index) {
+                        <div class="dia-celda" [class.vacio]="!dia.day">
+                            @if (dia.day) {
+                            <span class="numero-dia">{{ dia.day }}</span>
+                            <div class="contenedor-eventos"
+                                [class.dos-columnas]="vistaMensual() && dia.events.length > 4">
+                                @for (evento of dia.events; track $index) {
+
+                                @if (vistaMensual()) {
+                                <div class="evento-etiqueta" (mouseenter)="mostrarBocadillo($event, evento)"
+                                    (mouseleave)="ocultarBocadillo()">
+                                    {{ evento.event }}
+                                </div>
+                                } @else {
+                                <div class="evento-card-semanal">
+                                    <span class="badge-tipo">{{ evento.type }}</span>
+                                    <p class="evento-titulo-ac">{{ evento.event }}</p>
+                                    <a [href]="evento.url" target="_blank" class="btn-nookipedia">
+                                        Ver en Nookipedia <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                    </a>
+                                </div>
+                                }
+
+                                }
+                            </div>
+                            }
+                        </div>
+                        @if (bocadilloVisible()) {
+                        <div class="bocadillo-hover" [style.top.px]="bocadilloY()" [style.left.px]="bocadilloX()"
+                            style="display:block; position:fixed;">
+                            <small style="display:block; text-transform:uppercase; opacity:.75; font-size:.6rem;">
+                                {{ bocadilloEvento()?.type }}
+                            </small>
+                            <strong>{{ bocadilloEvento()?.event }}</strong>
+                        </div>
+                        }
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

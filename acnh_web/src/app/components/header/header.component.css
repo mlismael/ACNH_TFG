@@ -49,6 +49,17 @@
     color: white !important;
 }
 
+.dropdown-item:active {
+    background-color: transparent !important;
+
+}
+
+.dropdown-item:focus {
+    background-color: transparent;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 .active-parent .nav-link {
     color: var(--header-text) !important;
     font-weight: bold;
@@ -83,15 +94,18 @@
     border-radius: 50%;
     transition: all 0.4s ease;
     position: absolute;
-    top: 10px;    /* Distancia desde arriba */
-    right: 15px;  /* Distancia desde la derecha */
-    z-index: 1100; /* Para que esté por encima de la navbar y el menú móvil */
+    top: 10px;
+    /* Distancia desde arriba */
+    right: 15px;
+    /* Distancia desde la derecha */
+    z-index: 1100;
+    /* Para que esté por encima de la navbar y el menú móvil */
 }
 
 /* El Hover de los enlaces */
 .nav-link:hover {
     background-color: var(--inverse-theme-color) !important;
-    border-radius: 0, 375rem !important;
+    border-radius: 0.375rem !important;
     color: white !important;
 }
 

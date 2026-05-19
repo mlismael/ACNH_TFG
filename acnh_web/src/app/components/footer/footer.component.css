@@ -28,7 +28,7 @@
 }
 
 .copyright {
-    font-size: 0.75rem;
+    font-size: 0.7rem !important ;
     opacity: 0.8;
 }
 
@@ -38,8 +38,7 @@
     display: inline-flex;
     align-items: center;
     background-color: var(--inverse-theme-color) !important;
-    color: var(--header-text) !important; /* Invertimos para que destaque */
-    border-radius: 50px;
+    color: var(--header-text) !important;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;

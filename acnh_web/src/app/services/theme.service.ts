@@ -1,7 +1,6 @@
 // src/app/services/theme.service.ts
 import { Injectable, signal, effect } from '@angular/core';
 
-// Interfaz estricta para que no se te olvide ninguna imagen ni color
 export interface PageThemeConfig {
   light: { color: string; bgHorizontal: string; bgVertical: string };
   dark: { color: string; bgHorizontal: string; bgVertical: string };
@@ -11,7 +10,7 @@ export interface PageThemeConfig {
   providedIn: 'root',
 })
 export class ThemeService {
-  darkMode = signal<boolean>(false);
+  darkMode = signal<boolean>(this.getInitialTheme());
 
   // Guardamos la configuración actual de la página en la que estamos
   private currentTheme = signal<PageThemeConfig | null>(null);
@@ -23,20 +22,18 @@ export class ThemeService {
       const isDark = this.darkMode();
       const theme = this.currentTheme();
 
-      // 1. Aplicamos el atributo de Bootstrap para que el resto de la web (tablas, textos) se adapte
+      // Aplicamos el atributo de Bootstrap para el tema global
       document.documentElement.setAttribute(
         'data-bs-theme',
         isDark ? 'dark' : 'light',
       );
 
       if (theme) {
-        // 2. EXTRAEMOS LOS COLORES SEGÚN EL MODO ACTUAL
-        // Si isDark es false (Modo Claro), cogemos el bloque 'light'
-        // Si isDark es true (Modo Oscuro), cogemos el bloque 'dark'
+        // Seleccionamos colores según el modo activo
         const colorActual = isDark ? theme.dark.color : theme.light.color;
         const colorInverso = isDark ? theme.light.color : theme.dark.color;
 
-        // 3. INYECTAMOS LAS VARIABLES
+        // Inyectamos variables CSS de tema
         document.documentElement.style.setProperty(
           '--theme-color',
           colorActual,
@@ -46,7 +43,7 @@ export class ThemeService {
           colorInverso,
         );
 
-        // 4. AJUSTAMOS EL COLOR DEL TEXTO PARA CONTRASTE
+        // Ajustamos el color del texto para contraste
         const isLightColor = this.isColorLight(colorActual);
         const headerTextColor = isLightColor ? '#212529' : '#f8f9fa'; // Oscuro si fondo claro, claro si fondo oscuro
         document.documentElement.style.setProperty(
@@ -54,7 +51,7 @@ export class ThemeService {
           headerTextColor,
         );
 
-        // 4. GESTIÓN DE IMÁGENES
+        // Actualizamos las imágenes de fondo según el tema
         const configImg = isDark ? theme.dark : theme.light;
         document.documentElement.style.setProperty(
           '--bg-horizontal',
@@ -72,17 +69,33 @@ export class ThemeService {
   private isColorLight(color: string): boolean {
     // Remover # si existe
     const hex = color.replace('#', '');
-    
+
     // Convertir a RGB
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
-    
+
     // Calcular luminancia (fórmula estándar)
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
+
     // Si > 0.5 es claro, sino oscuro
     return luminance > 0.5;
+  }
+
+  /**
+   * Determina si debe empezar en modo oscuro (8 PM a 8 AM hora Madrid)
+   */
+  private getInitialTheme(): boolean {
+    const madridTime = new Intl.DateTimeFormat('es-ES', {
+      timeZone: 'Europe/Madrid',
+      hour: 'numeric',
+      hour12: false
+    }).format(new Date());
+
+    const hour = parseInt(madridTime, 10);
+
+    // Si la hora está entre las 20 (8pm) y las 7:59 (8am)
+    return hour >= 20 || hour < 8;
   }
 
   toggleDarkMode() {

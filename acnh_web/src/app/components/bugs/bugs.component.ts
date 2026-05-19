@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ThemeService, PageThemeConfig } from '../../services/theme.service';
 import { NookipediaService } from '../../services/nookipedia.service';
@@ -6,11 +6,11 @@ import { TranslationService } from '../../services/translation.service';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
 import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-bugs',
-  standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, CommonModule],
   templateUrl: './bugs.component.html',
   styleUrl: './bugs.component.css',
 })
@@ -25,31 +25,35 @@ export class BugsComponent implements OnInit, OnDestroy {
   bichos: any[] = [];
   paginaActual: number = 1;
   itemsPorPagina: number = 24;
-  bichosAgregados: Set<string> = new Set();
+
+  // Usamos un Signal de Set para los favoritos (id_api)
+  private bichosAgregadosIds = signal<Set<string>>(new Set());
 
   // Variables de búsqueda
   filtroNombre: string = '';
   nombreAplicado: string = '';
   ordenSeleccionado: string = 'NUM_ASC';
 
-  ngOnInit() {
-    this.cargarBichosGuardados();
+  // Constante para el tipo (Bichos = 1)
+  private readonly TIPO_BICHO = 1;
 
-    // Llamada correcta al servicio usando 'bugs'
+  ngOnInit() {
+    this.cargarFavoritos();
+
     this.nookipediaService.getCollectibles('bugs').subscribe({
       next: (data) => {
-        // 1. Traducir y luego ordenar por número de entrada
         this.bichos = data
           .map((b: any) => this.translationService.translateCollectible(b))
           .sort((a: any, b: any) => a.number - b.number);
-        this.guardarImagenesBichos(this.bichos);
+
+          this.paginaActual = 1;
       },
       error: (err) => console.error('Error al cargar bichos', err),
     });
 
     const bugsTheme: PageThemeConfig = {
       light: {
-        color: 'rgba(139, 195, 74, 0.98)', // Un verde más "insecto"
+        color: 'rgba(139, 195, 74, 0.98)',
         bgHorizontal: '/assets/patterned-animal-crossing-new-horizons-wallpaper-from-my-v0-qfpmdswuca461.jpg',
         bgVertical: '/assets/fd25e7404aae302bb54bba5d4ff13ace.jpg',
       },
@@ -59,7 +63,6 @@ export class BugsComponent implements OnInit, OnDestroy {
         bgVertical: '/assets/remember-those-my-nintendo-wallpapers-i-made-them-dark-mode-v0-i12piqc5yjh51.png',
       },
     };
-
     this.themeService.setPageTheme(bugsTheme);
   }
 
@@ -67,7 +70,75 @@ export class BugsComponent implements OnInit, OnDestroy {
     this.themeService.resetPageTheme();
   }
 
-  // --- LÓGICA FILTRADO Y PAGINACIÓN ---
+  // --- FAVORITOS (BACKEND) ---
+
+  private cargarFavoritos(): void {
+    const usuario = this.authService.getCurrentUser();
+    if (usuario) {
+      this.usuarioService.getColeccionablesUsuarioPorTipo(usuario.id, this.TIPO_BICHO).subscribe({
+        next: (favoritos) => {
+          const ids = new Set(favoritos.map(f => f.id_api.toString()));
+          this.bichosAgregadosIds.set(ids);
+        }
+      });
+    }
+  }
+
+  esBichoAgregado(idApi: any): boolean {
+    return this.bichosAgregadosIds().has(idApi.toString());
+  }
+
+  ponerAFavoritos(b: any): void {
+    const usuarioActual = this.authService.getCurrentUser();
+    if (!usuarioActual) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const idApi = b.number.toString(); // Usamos el número de la enciclopedia como ID único
+    const yaAgregado = this.esBichoAgregado(idApi);
+
+    if (yaAgregado) {
+      // ELIMINAR
+      this.usuarioService.deleteColeccionableUsuario(usuarioActual.id, idApi).subscribe({
+        next: (res) => {
+          if (res.status === 'success') {
+            this.bichosAgregadosIds.update(set => {
+              const nuevo = new Set(set);
+              nuevo.delete(idApi);
+              return nuevo;
+            });
+          }
+        }
+      });
+    } else {
+      // AÑADIR
+      const bichoData = {
+        id_api: idApi,
+        id_tipo: this.TIPO_BICHO,
+        nombre: b.name,
+        imagen: b.image_url // Guardamos la URL directa, sin cache local
+      };
+
+      this.usuarioService.createColeccionableUsuario(usuarioActual.id, bichoData).subscribe({
+        next: (res) => {
+          if (res.status === 'success') {
+            this.bichosAgregadosIds.update(set => {
+              const nuevo = new Set(set);
+              nuevo.add(idApi);
+              return nuevo;
+            });
+          }
+        }
+      });
+    }
+  }
+
+  // --- GETTERS Y FILTRADO ---
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
 
   get totalPaginas(): number {
     const filtrados = this.bichos.filter((b) =>
@@ -87,21 +158,13 @@ export class BugsComponent implements OnInit, OnDestroy {
   }
 
   ordenar() {
-  switch (this.ordenSeleccionado) {
-    case 'ASC':
-      this.bichos.sort((a, b) => a.name.localeCompare(b.name));
-      break;
-    case 'DESC':
-      this.bichos.sort((a, b) => b.name.localeCompare(a.name));
-      break;
-    case 'NUM_ASC':
-      this.bichos.sort((a, b) => a.number - b.number);
-      break;
-    case 'NUM_DESC':
-      this.bichos.sort((a, b) => b.number - a.number);
-      break;
+    switch (this.ordenSeleccionado) {
+      case 'ASC': this.bichos.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case 'DESC': this.bichos.sort((a, b) => b.name.localeCompare(a.name)); break;
+      case 'NUM_ASC': this.bichos.sort((a, b) => a.number - b.number); break;
+      case 'NUM_DESC': this.bichos.sort((a, b) => b.number - a.number); break;
+    }
   }
-}
 
   get bichosAMostrar() {
     const filtrados = this.bichos.filter((b) =>
@@ -109,81 +172,5 @@ export class BugsComponent implements OnInit, OnDestroy {
     );
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     return filtrados.slice(inicio, inicio + this.itemsPorPagina);
-  }
-
-  // --- LÓGICA FAVORITOS Y CACHE ---
-
-  get isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
-  }
-
-  private guardarImagenesBichos(bichos: any[]): void {
-    const cache = sessionStorage.getItem('coleccionables_cache');
-    const cacheObj = cache ? JSON.parse(cache) : {};
-
-    bichos.forEach((b) => {
-      if (b.name && b.image_url) {
-        // Guardamos por nombre o ID según tu lógica de "Mi Isla"
-        cacheObj[b.name] = b.image_url;
-      }
-    });
-    sessionStorage.setItem('coleccionables_cache', JSON.stringify(cacheObj));
-  }
-
-  private cargarBichosGuardados(): void {
-    const agregados = sessionStorage.getItem('bichos_agregados');
-    if (agregados) {
-      this.bichosAgregados = new Set(JSON.parse(agregados));
-    }
-  }
-
-  esBichoAgregado(nombre: string): boolean {
-    return this.bichosAgregados.has(nombre);
-  }
-
-  redirectToLogin(): void {
-    this.router.navigate(['/login']);
-  }
-
-  ponerAFavoritos(b: any): void {
-    const usuarioActual = this.authService.getCurrentUser();
-    if (!usuarioActual) {
-      this.redirectToLogin();
-      return;
-    }
-
-    const bichoNombre = b.name;
-    if (this.esBichoAgregado(bichoNombre)) {
-      this.bichosAgregados.delete(bichoNombre);
-      this.actualizarSessionStorage();
-      return;
-    }
-
-    const bichoData = {
-      id_api: b.name, // O el ID si la API lo da
-      id_tipo: 1, // Asumimos Tipo 1 para Bichos
-      nombre: b.name,
-      imagen: b.image_url,
-      fechaCaptura: new Date().toISOString(),
-    };
-
-    this.usuarioService
-      .createColeccionableUsuario(usuarioActual.id, bichoData)
-      .subscribe({
-        next: (res) => {
-          if (res.status === 'success') {
-            this.bichosAgregados.add(bichoNombre);
-            this.actualizarSessionStorage();
-          }
-        },
-        error: (err) => console.error('Error al guardar bicho', err),
-      });
-  }
-
-  private actualizarSessionStorage(): void {
-    sessionStorage.setItem(
-      'bichos_agregados',
-      JSON.stringify(Array.from(this.bichosAgregados)),
-    );
   }
 }

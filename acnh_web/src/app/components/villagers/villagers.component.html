@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="img-container">
-                    <img [src]="v.image_url" [alt]="v.name" class="villager-img">
+                    <img [src]="v.image_url" [alt]="v.name" class="villager-img" loading="lazy">
                 </div>
 
                 <div class="card-body pt-0 position-relative">
@@ -74,21 +74,15 @@
                         }
 
                         @if (isLoggedIn) {
-                            <button class="btn-heart" 
-                                    [class.active]="esAldeanoAgregado(v.id.toString())"
-                                    (click)="ponerAFavoritos(v)" 
-                                    type="button" 
-                                    title="Agregar a mi isla">
-                                @if (esAldeanoAgregado(v.id.toString())) {
-                                    <i class="bi bi-heart-fill"></i>
-                                } @else {
-                                    <i class="bi bi-heart"></i>
-                                }
-                            </button>
+                        <button class="btn-heart" [class.active]="esAldeanoAgregado(v.id.toString())"
+                            (click)="ponerAFavoritos(v)" type="button" title="Agregar a mi isla">
+                            <i [class]="esAldeanoAgregado(v.id) ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+                        </button>
                         } @else {
-                            <a [routerLink]="['/login']" class="btn-heart btn-heart-login" title="Inicia sesión para agregar aldeanos">
-                                <i class="bi bi-heart"></i>
-                            </a>
+                        <a [routerLink]="['/login']" class="btn-heart btn-heart-login"
+                            title="Inicia sesión para agregar aldeanos">
+                            <i class="bi bi-heart"></i>
+                        </a>
                         }
                     </div>
 

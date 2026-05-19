@@ -83,10 +83,10 @@
 
                     <div class="position-absolute bottom-0 end-0 pe-3 pb-2">
                         @if (isLoggedIn) {
-                        <button class="btn-heart p-0 border-0 bg-transparent" [class.active]="esPezAgregado(p.name)"
+                        <button class="btn-heart p-0 border-0 bg-transparent" [class.active]="esPezAgregado(p.number)"
                             (click)="ponerAFavoritos(p)" type="button">
-                            <i class="bi" [class.bi-star-fill]="esPezAgregado(p.name)"
-                                [class.bi-star]="!esPezAgregado(p.name)"></i>
+                            <i [class]="esPezAgregado(p.number) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+
                         </button>
                         } @else {
                         <a [routerLink]="['/login']" class="btn-heart text-decoration-none" title="Inicia sesión">

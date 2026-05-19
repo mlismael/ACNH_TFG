@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -42,7 +43,12 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.router.navigate(['/home']);
         }
       },
-      error: (err) => console.error('Error en login', err),
+      error: (err) => {
+        console.error('Error en login', err);
+        const message =
+          err?.error?.message || 'Credenciales incorrectas o error de conexión.';
+        this.mostrarAlerta(message);
+      },
     });
   }
 
@@ -54,7 +60,17 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.isLoginMode.set(true);
         }
       },
-      error: (err) => console.error('Error en registro', err),
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 409) {
+          this.mostrarAlerta(err.error.message);
+        } else if (err.status === 400) {
+          // Caso de campos vacíos
+          this.mostrarAlerta(err.error.message);
+        } else {
+          // Error 500 u otros fallos de red
+          this.mostrarAlerta('Ha ocurrido un error inesperado en el servidor.');
+        }
+      },
     });
   }
 
@@ -67,7 +83,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Configuración de tema para Peces
+    // Configuración de tema para Login
     const fishTheme: PageThemeConfig = {
       light: {
         color: '#BCAAA4',

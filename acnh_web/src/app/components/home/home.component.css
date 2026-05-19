@@ -1,0 +1,380 @@
+:host {
+    color: #5d4037;
+}
+
+/* --- BOTONES Y CARDS BASE --- */
+.btn-login-nav {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    color: var(--inverse-theme-color) !important;
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-color) 25%, transparent) !important;
+}
+
+.btn-login-nav:hover {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    color: var(--theme-color) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--theme-color) 35%, transparent) !important;
+    border: 1px solid var(--inverse-theme-color) !important;
+}
+
+.bi-patch-question-fill {
+    color: var(--inverse-theme-color) !important;
+    transition: all 0.4s ease;
+    cursor: default;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-color) 25%, transparent) !important;
+}
+
+.bi-patch-question-fill:hover {
+    cursor: default;
+    color: var(--theme-color) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--theme-color) 35%, transparent) !important;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.35) !important;
+    border: none;
+    border-radius: 15px;
+}
+
+/* ─────────────────────────────────────────
+   CALENDARIO — home.component.css
+───────────────────────────────────────── */
+
+.calendario-contenedor {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.contenedor-eventos.dos-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    align-content: start;
+}
+
+/* ── Cabecera ── */
+.calendario-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.cal-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.cal-mes-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #5d4037;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.btn-mes {
+    width: 32px;
+    height: 32px;
+    background-color: var(--inverse-theme-color);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+}
+
+.btn-mes:active {
+    transform: scale(0.9);
+}
+
+/* Toggle pill */
+.cal-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50px;
+    border: 1.5px solid #c8b89a;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.toggle-btn {
+    padding: 5px 16px;
+    border: none;
+    background: transparent;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #8c7550;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    border-radius: 50px;
+    white-space: nowrap;
+}
+
+.toggle-btn.activo {
+    background: var(--inverse-theme-color);
+    color: white;
+}
+
+/* ── Grid cabecera días ── */
+.cabecera-dias {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dia-semana {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.7rem;
+    padding: 4px 0;
+    color: #8c7550;
+}
+
+/* ── Grid de días: altura fija, igual en mensual y semanal ── */
+.calendario-grid:last-child {
+    height: 560px;
+    grid-template-rows: repeat(6, 1fr);
+    align-content: stretch;
+}
+
+/* ── Celda de día ──
+   overflow visible para el bocadillo, pero la celda
+   no crece con el contenido (el bocadillo sale fuera)
+── */
+.dia-celda {
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #e0d8cc;
+    border-radius: 8px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    /* overflow visible → el bocadillo puede salir por encima */
+    overflow: visible;
+    box-sizing: border-box;
+    min-height: 110px !important;
+    /* necesario para que grid-template-rows funcione bien */
+}
+
+.dia-celda.vacio {
+    background: transparent;
+    border: none;
+}
+
+.numero-dia {
+    font-weight: 700;
+    align-self: flex-end;
+    color: #74664B;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+/* ── Vista semanal: misma altura total, 1 sola fila ── */
+.vista-semanal .calendario-grid:last-child {
+    grid-template-rows: 1fr;
+}
+
+.vista-semanal .dia-celda {
+    border-color: #cfe9ce;
+    border-width: 2px;
+    overflow-y: auto;
+}
+
+/* ── Eventos mensuales ── */
+.contenedor-eventos {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.evento-etiqueta {
+    background-color: #FFF9C4;
+    color: #8c7225;
+    font-size: 0.62rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* position relative para anclar el bocadillo */
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    /* Al hacer hover necesita estar por encima del resto */
+    z-index: 0;
+}
+
+.evento-etiqueta:hover {
+    overflow: visible;
+    z-index: 9999;
+}
+
+.bocadillo-hover {
+    /* Eliminamos display: none para que Angular mande */
+    position: fixed;
+    background: #5d4037;
+    color: white;
+    padding: 8px 10px;
+    border-radius: 10px;
+    width: 160px;
+    z-index: 99999;
+    pointer-events: none;
+    white-space: normal;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    transform: translateX(-50%);
+    margin: 0;
+    left: 0;
+    top: 0;
+}
+
+.bocadillo-hover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #5d4037;
+}
+
+.evento-etiqueta:hover .bocadillo-hover {
+    display: block;
+}
+
+/* ── Eventos vista semanal ── */
+.evento-card-semanal {
+    background: #f1f8e9;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #dcedc8;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.badge-tipo {
+    font-size: 0.6rem;
+    background: #a5d6a7;
+    color: #2e7d32;
+    padding: 1px 6px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 3px;
+}
+
+.evento-titulo-ac {
+    font-size: 0.8rem;
+    color: #5d4037;
+    margin: 3px 0;
+    font-weight: 700;
+
+    /* Control de líneas */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    /* Número de líneas máximo */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    /* Altura máxima de seguridad */
+    line-height: 1.2;
+    /* Ajusta según prefieras el espaciado */
+    max-height: calc(1.2rem * 4);
+    /* (line-height * número de líneas) */
+}
+
+.btn-nookipedia {
+    color: #4CAF50;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.btn-nookipedia:hover {
+    color: #2e7d32;
+    text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .calendario-grid:last-child {
+        height: 360px;
+    }
+
+    .dia-semana {
+        font-size: 0.6rem;
+    }
+
+    .numero-dia {
+        font-size: 0.7rem;
+    }
+
+    .dia-celda {
+        padding: 3px;
+    }
+
+    .evento-etiqueta {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+    }
+
+    .cal-mes-label {
+        font-size: 0.8rem;
+    }
+
+    .toggle-btn {
+        padding: 4px 10px;
+        font-size: 0.7rem;
+    }
+
+    .btn-mes {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .calendario-grid:last-child {
+        height: 300px;
+    }
+
+    .dia-semana {
+        font-size: 0.55rem;
+    }
+
+    .calendario-grid {
+        gap: 2px;
+    }
+}

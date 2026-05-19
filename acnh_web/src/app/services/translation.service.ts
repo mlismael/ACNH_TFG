@@ -555,12 +555,11 @@ export class TranslationService {
   // Método para traducir un coleccionable (peces, bichos, criaturas marinas)
   // Asumiendo campos comunes como 'location' si aplica, pero enfocándonos en básicos
   translateCollectible(collectible: any): any {
-    // 1. Función de limpieza avanzada
     const cleanKey = (val: string) => {
       if (!val) return '';
       return val
         .replace(/^\d+/, '') // Elimina números al principio (ej: "01 Common" -> "Common")
-        .trim() // Elimina espacios y saltos de línea
+        .trim();
     };
 
     const rarityMap: { [key: string]: string } = {
@@ -571,7 +570,7 @@ export class TranslationService {
       'Ultra-rare': 'Ultra raro',
     };
 
-    // 2. Mapeos (Mantenemos los tuyos, están perfectos)
+    // Mapeos de ubicación para traducción
     const locationMap: { [key: string]: string } = {
       Flying: 'Volando',
       'Flying near flowers': 'Volando cerca de flores',

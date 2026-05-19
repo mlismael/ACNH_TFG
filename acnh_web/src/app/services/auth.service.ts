@@ -10,7 +10,9 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  img_perfil: string;
   nombre_isla?: string;
+  color_tema: string;
   fecha_registro?: string;
   fecha_actualizacion?: string;
   activo?: boolean;
@@ -52,10 +54,14 @@ export interface RegisterData {
 })
 export class AuthService {
   private baseUrl = 'http://localhost/ACNH_TFG/acnh_project/index.php';
-  private currentUser = new BehaviorSubject<User | null>(this.getUserFromStorage());
+  private currentUser = new BehaviorSubject<User | null>(
+    this.getUserFromStorage(),
+  );
   public currentUser$ = this.currentUser.asObservable();
 
-  private isAuthenticated = new BehaviorSubject<boolean>(this.hasValidSession());
+  private isAuthenticated = new BehaviorSubject<boolean>(
+    this.hasValidSession(),
+  );
   public isAuthenticated$ = this.isAuthenticated.asObservable();
 
   constructor(private http: HttpClient) {
@@ -151,50 +157,7 @@ export class AuthService {
     return this.isAuthenticated.value;
   }
 
-  /**
-   * Obtiene el token almacenado
-   */
-  public getToken(): string | null {
-    return sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token');
-  }
 
-  /**
-   * Obtiene los datos del usuario por ID
-   * @param userId ID del usuario
-   */
-  public getUserById(userId: number): Observable<User> {
-    const params = new HttpParams()
-      .set('controlador', 'Usuario')
-      .set('accion', 'ver')
-      .set('id', userId.toString());
-
-    return this.http.get<AuthResponse>(this.baseUrl, { params }).pipe(
-      map((response) => {
-        if (response.status === 'success' && response.data) {
-          return response.data as User;
-        }
-        throw new Error('Error al obtener usuario');
-      }),
-    );
-  }
-
-  /**
-   * Obtiene todos los usuarios (solo administradores)
-   */
-  public getAllUsers(): Observable<User[]> {
-    const params = new HttpParams()
-      .set('controlador', 'Usuario')
-      .set('accion', 'listar');
-
-    return this.http.get<AuthResponse>(this.baseUrl, { params }).pipe(
-      map((response) => {
-        if (response.status === 'success' && response.data) {
-          return Array.isArray(response.data) ? response.data : response.data as User[];
-        }
-        return [];
-      }),
-    );
-  }
 
   // ===== MÉTODOS PRIVADOS DE ALMACENAMIENTO =====
 

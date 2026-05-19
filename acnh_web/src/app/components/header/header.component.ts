@@ -1,8 +1,8 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, User } from '../../services/auth.service';
 
 
 @Component({
@@ -22,11 +22,17 @@ export class HeaderComponent {
   // Inyectamos el servicio
   themeService = inject(ThemeService);
 
-  user$ = this.authService.currentUser$;
+  user = signal<User | null>(null);
 
   // Exponemos el signal para que el HTML sea más limpio
   // Al ser un signal, en el HTML lo usaremos como isDark()
   isDark = this.themeService.darkMode;
+
+  constructor() {
+    this.authService.currentUser$.subscribe((user) => {
+      this.user.set(user);
+    });
+  }
 
   toggleTheme() {
     this.themeService.toggleDarkMode();

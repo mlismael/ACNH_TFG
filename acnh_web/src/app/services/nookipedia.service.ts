@@ -72,30 +72,4 @@ export class NookipediaService {
             );
     }
 
-    // Buscar detalle de un elemento específico
-    getDetail(
-        resource: 'villagers' | 'bugs' | 'fish' | 'sea-creatures',
-        name: string,
-    ): Observable<any[]> {
-        const params = new HttpParams()
-            .set('controlador', 'Nookipedia')
-            .set('accion', 'buscarDetalle')
-            .set('resource', resource)
-            .set('name', name);
-
-        return this.http
-            .get<any>(this.baseUrl, { params })
-            .pipe(
-                map((response) => {
-                    if (response.status === 'success') {
-                        return response.data.map((v: any) => 
-                            resource === 'villagers' 
-                                ? this.translationService.translateVillager(v) 
-                                : this.translationService.translateCollectible(v)
-                        );
-                    }
-                    return [];
-                }),
-            );
-    }
 }

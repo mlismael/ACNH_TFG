@@ -30,6 +30,8 @@ describe('UsuarioService', () => {
         username: 'newusername',
         email: 'newemail@example.com',
         nombre_isla: 'Nueva Isla',
+        color_tema: 'dark',
+        password: 'newpass123',
       };
 
       service.updateUsuario(userId, updateData).subscribe((response) => {
@@ -41,7 +43,9 @@ describe('UsuarioService', () => {
         request.params.get('controlador') === 'Usuario' &&
         request.params.get('accion') === 'actualizar',
       );
-      expect(req.request.method).toBe('POST');
+      expect(req.request.method).toBe('PATCH');
+      expect(req.request.body.password).toBe('newpass123');
+      expect(req.request.body.color_tema).toBe('dark');
       req.flush({ status: 'success', message: 'Usuario actualizado' });
     });
 

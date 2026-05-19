@@ -1,0 +1,248 @@
+@if (user(); as user) {
+<div class="perfil-wrapper">
+    <div class="perfil-layout">
+
+        <!-- ══ PANEL IZQUIERDO: PERFIL ══ -->
+        <aside class="panel-perfil">
+            <img [src]="user.img_perfil || '/assets/usuario.png'" alt="Foto de perfil" class="avatar-img"
+                [style]="'--color-usuario: ' + (user.color_tema || '#ccc')" />
+
+            <div class="user-meta">
+                <span class="user-username">{{ user.username }}</span>
+                <span class="user-email">{{ user.email || 'Sin email' }}</span>
+            </div>
+
+            <div class="user-fields">
+                <div class="field-row">
+                    <span class="field-label">Usuario</span>
+                    <span class="field-value">{{ user.username }}</span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">Email</span>
+                    <span class="field-value">{{ user.email || 'No definido' }}</span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">Isla</span>
+                    <span class="field-value">{{ user.nombre_isla || 'No definido' }}</span>
+                </div>
+            </div>
+
+            <button class="btn-editar" (click)="toggleEdicion()">
+                {{ editando() ? 'Cancelar' : 'Editar perfil' }}
+            </button>
+        </aside>
+
+        <!-- ══ PANEL DERECHO ══ -->
+        <main class="panel-principal">
+
+            @if (!editando()) {
+            <h1 class="isla-titulo">{{ user.nombre_isla || 'Mi isla' }}</h1>
+
+            <!-- ALDEANOS -->
+            <section class="coleccion-seccion">
+                <h2 class="seccion-titulo">
+                    <span class="seccion-icono aldeanos-icono"></span>Aldeanos
+                </h2>
+                @if (aldeanos().length > 0) {
+                <div class="coleccion-grid">
+                    @for (aldeano of aldeanos(); track aldeano.id) {
+                    <div class="coleccion-item">
+                        <div class="foto-wrap">
+                            <img [src]="aldeano.imagen_aldeano || '/assets/usuario.png'" [alt]="aldeano.nombre_aldeano"
+                                class="item-foto" loading="lazy" #imgA (error)="imgA.src='/assets/usuario.png'" />
+                            <div class="item-overlay">
+                                <button class="btn-eliminar" (click)="eliminarAldeano(aldeano)"
+                                    [title]="'Eliminar a ' + aldeano.nombre_aldeano">✕</button>
+                            </div>
+                        </div>
+                        <span class="item-nombre">{{ aldeano.nombre_aldeano }}</span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-msg">Aún no tienes aldeanos registrados.</p>
+                }
+            </section>
+
+            <!-- BICHOS -->
+            <section class="coleccion-seccion">
+                <h2 class="seccion-titulo">
+                    <span class="seccion-icono bichos-icono"></span>Bichos
+                </h2>
+                @if (bichos().length > 0) {
+                <div class="coleccion-grid">
+                    @for (bicho of bichos(); track bicho.id) {
+                    <div class="coleccion-item">
+                        <div class="foto-wrap">
+                            <img [src]="bicho.imagen || '/assets/usuario.png'" [alt]="bicho.nombre" class="item-foto"
+                                loading="lazy" #imgB (error)="imgB.src='/assets/usuario.png'" />
+                            <div class="item-overlay">
+                                <button class="btn-eliminar" (click)="eliminarColeccionable(bicho)"
+                                    [title]="'Eliminar ' + bicho.nombre">✕</button>
+                            </div>
+                        </div>
+                        <span class="item-nombre">{{ bicho.nombre }}</span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-msg">Sin bichos capturados.</p>
+                }
+            </section>
+
+            <!-- PECES -->
+            <section class="coleccion-seccion">
+                <h2 class="seccion-titulo">
+                    <span class="seccion-icono peces-icono"></span>Peces
+                </h2>
+                @if (peces().length > 0) {
+                <div class="coleccion-grid">
+                    @for (pez of peces(); track pez.id) {
+                    <div class="coleccion-item">
+                        <div class="foto-wrap">
+                            <img [src]="pez.imagen || '/assets/usuario.png'" [alt]="pez.nombre" class="item-foto"
+                                loading="lazy" #imgP (error)="imgP.src='/assets/usuario.png'" />
+                            <div class="item-overlay">
+                                <button class="btn-eliminar" (click)="eliminarColeccionable(pez)"
+                                    [title]="'Eliminar ' + pez.nombre">✕</button>
+                            </div>
+                        </div>
+                        <span class="item-nombre">{{ pez.nombre }}</span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-msg">Sin peces capturados.</p>
+                }
+            </section>
+
+            <!-- CRIATURAS MARINAS -->
+            <section class="coleccion-seccion">
+                <h2 class="seccion-titulo">
+                    <span class="seccion-icono marinas-icono"></span>Criaturas marinas
+                </h2>
+                @if (criaturasMarinas().length > 0) {
+                <div class="coleccion-grid">
+                    @for (criatura of criaturasMarinas(); track criatura.id) {
+                    <div class="coleccion-item">
+                        <div class="foto-wrap">
+                            <img [src]="criatura.imagen || '/assets/usuario.png'" [alt]="criatura.nombre"
+                                class="item-foto" loading="lazy" #imgC (error)="imgC.src='/assets/usuario.png'" />
+                            <div class="item-overlay">
+                                <button class="btn-eliminar" (click)="eliminarColeccionable(criatura)"
+                                    [title]="'Eliminar ' + criatura.nombre">✕</button>
+                            </div>
+                        </div>
+                        <span class="item-nombre">{{ criatura.nombre }}</span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-msg">Sin criaturas marinas registradas.</p>
+                }
+            </section>
+            }
+
+            <!-- ─── FORMULARIO EDICIÓN ─── -->
+            @if (editando()) {
+            <div class="form-edicion">
+                <h2 class="form-titulo">Editar perfil</h2>
+
+                <!-- FOTO DE PERFIL: reutiliza coleccion-grid, coleccion-item, foto-wrap e item-foto -->
+                <div class="form-seccion">
+                    <span class="form-label">Foto de perfil</span>
+                    <div class="coleccion-grid">
+                        @for (foto of fotosDisponibles; track foto) {
+                        <div class="coleccion-item">
+                            <button class="foto-wrap" type="button"
+                                [class.seleccionado]="formData().img_perfil === foto" (click)="seleccionarFoto(foto)">
+                                <img [src]="foto" alt="Opción foto" class="item-foto" />
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- COLOR TEMA: reutiliza coleccion-grid, coleccion-item, foto-wrap -->
+                <div class="form-seccion">
+                    <span class="form-label">Color de tema</span>
+                    <div class="coleccion-grid">
+                        @for (color of coloresDisponibles; track color) {
+                        <div class="coleccion-item">
+                            <button class="foto-wrap color-btn" type="button"
+                                [class.seleccionado]="formData().color_tema === color" [style.--c]="color"
+                                [attr.aria-label]="'Color ' + color" (click)="seleccionarColor(color)"></button>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-seccion">
+                    <span class="form-label">Nombre de usuario</span>
+                    <input type="text" class="form-input" placeholder="Nombre de usuario" [value]="formData().username"
+                        (input)="updateForm('username', $any($event.target).value)" />
+                </div>
+
+                <div class="form-seccion">
+                    <span class="form-label">Email</span>
+                    <input type="email" class="form-input" placeholder="Email" [value]="formData().email"
+                        (input)="updateForm('email', $any($event.target).value)" />
+                </div>
+
+                <div class="form-seccion">
+                    <span class="form-label">Nombre de la isla</span>
+                    <input type="text" class="form-input" placeholder="Nombre de la isla"
+                        [value]="formData().nombre_isla"
+                        (input)="updateForm('nombre_isla', $any($event.target).value)" />
+                </div>
+
+                <div class="form-seccion">
+                    <span class="form-label">Contraseña actual</span>
+                    <div class="input-password-wrap">
+                        <input class="form-input" placeholder="Contraseña actual" autocomplete="current-password"
+                            [type]="mostrarPassActual() ? 'text' : 'password'"
+                            (input)="updateForm('passwordActual', $any($event.target).value)" />
+                        <button type="button" class="btn-ojo" (click)="toggleOjo('actual')">
+                            <i class="bi" [class.bi-eye]="!mostrarPassActual()"
+                                [class.bi-eye-slash]="mostrarPassActual()"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-seccion">
+                    <span class="form-label">Nueva contraseña</span>
+                    <div class="input-password-wrap">
+                        <input class="form-input" placeholder="Nueva contraseña" autocomplete="new-password"
+                            [type]="mostrarPassNueva() ? 'text' : 'password'"
+                            (input)="updateForm('passwordNueva', $any($event.target).value)" />
+                        <button type="button" class="btn-ojo" (click)="toggleOjo('nueva')">
+                            <i class="bi" [class.bi-eye]="!mostrarPassNueva()"
+                                [class.bi-eye-slash]="mostrarPassNueva()"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-seccion">
+                    <span class="form-label">Confirmar nueva contraseña</span>
+                    <div class="input-password-wrap">
+                        <input class="form-input" placeholder="Repetir nueva contraseña" autocomplete="new-password"
+                            [type]="mostrarPassConfirm() ? 'text' : 'password'"
+                            (input)="updateForm('passwordConfirm', $any($event.target).value)" />
+                        <button type="button" class="btn-ojo" (click)="toggleOjo('confirm')">
+                            <i class="bi" [class.bi-eye]="!mostrarPassConfirm()"
+                                [class.bi-eye-slash]="mostrarPassConfirm()"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-acciones">
+                    <button type="button" class="btn-cancelar" (click)="toggleEdicion()">Cancelar</button>
+                    <button type="button" class="btn-guardar" (click)="guardarPerfil()">Guardar cambios</button>
+                </div>
+            </div>
+            }
+
+        </main>
+    </div>
+</div>
+}

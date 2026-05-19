@@ -7,7 +7,7 @@
         [class.justify-content-between]="!isLogin">
         <div class="col-12 col-md-4 align-items-center d-flex justify-content-center">
             <a routerLink="/" class="d-flex align-items-center text-decoration-none">
-                <img [src]="isDark() ? '/assets/acnh-dark-logo.png' : '/assets/acnh-light-logo_Nero_AI_Image_Upscaler_Photo.png'"
+                <img [src]="isDark() ? '/assets/acnh-dark-logo.png' : '/assets/acnh-light-logo.png'"
                     alt="Logo ACNH" width="120">
             </a>
         </div>
@@ -26,7 +26,7 @@
                         </button>
 
                         <!-- Lógica de Sesión -->
-                        @if (user$ | async; as user) {
+                        @if (user(); as user) {
                         <!-- Si está logueado: Desplegable con el Username -->
                         <div class="nav-item dropdown custom-user-dropdown">
                             <a class="nav-link dropdown-toggle btn btn-login-nav d-flex align-items-center text-uppercase"
@@ -73,7 +73,6 @@
                                             routerLinkActive="active">Criaturas marinas</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item mx-3"><a class="nav-link" href="#">Pricing</a></li>
                         </ul>
                     </div>
 

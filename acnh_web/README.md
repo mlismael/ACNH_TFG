@@ -1,59 +1,88 @@
-# AcnhWeb
+# ACNH Web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+Frontend Angular del proyecto ACNH. Consume un backend PHP que expone una API REST y muestra:
 
-## Development server
+- Lista de aldeanos (`/villagers`)
+- Lista de bichos (`/bugs`)
+- Lista de peces (`/fishes`)
+- Lista de criaturas marinas (`/seacreatures`)
+- Login / registro (`/login`)
+- Perfil de usuario (`/perfil-usuario`)
 
-To start a local development server, run:
+## Estructura principal
+
+- `src/app/components/` - Componentes de cada página y elementos UI.
+- `src/app/services/` - Servicios para autenticación, traducción, temas y conexión con el backend.
+- `src/assets/` - Imágenes, logos y iconos utilizados por la aplicación.
+- `src/styles.css` - Estilos globales compartidos.
+- `src/app/app.routes.ts` - Rutas de la aplicación.
+
+## Rutas de la aplicación
+
+- `/home`
+- `/villagers`
+- `/bugs`
+- `/fishes`
+- `/seacreatures`
+- `/login`
+- `/perfil-usuario`
+
+## Dependencias principales
+
+- Angular 19
+- Bootstrap 5 (estilos y responsive)
+- RxJS
+- Angular Forms
+
+## Ejecución local
+
+Instala dependencias y ejecuta el servidor:
 
 ```bash
+cd acnh_web
+npm install
+npm run build
+npm run serve
+```
+
+O directamente con Angular CLI:
+
+```bash
+cd acnh_web
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La aplicación se abrirá en `http://localhost:4200/`.
 
-## Code scaffolding
+## Configuración del backend de consumo
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+El frontend realiza llamadas al backend en:
 
-```bash
-ng generate component component-name
+```text
+http://localhost/ACNH_TFG/acnh_project/index.php
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Los servicios principales son:
+
+- `auth.service.ts` → login, logout y almacenamiento de sesión.
+- `nookipedia.service.ts` → petición de aldeanos, coleccionables y eventos.
+- `translation.service.ts` → traducción de texto y mapeo de signos zodiacales.
+- `theme.service.ts` → alternancia de tema claro/oscuro.
+
+## Notas útiles
+
+- La ruta `/login` muestra formulario de acceso y registro en el mismo componente.
+- El logo del header alterna entre `acnh-dark-logo.png` y `acnh-light-logo_Nero_AI_Image_Upscaler_Photo.jpeg`.
+- La aplicación usa `sessionStorage` para guardar el usuario y token tras el login.
+- `villagers.component.ts` usa mocks traducidos si la API real no responde.
+
+## Build
+
+Para compilar en modo producción:
 
 ```bash
-ng generate --help
+cd acnh_web
+ng build --prod
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Los artefactos se generan en `dist/acnh_web`.

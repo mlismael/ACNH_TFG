@@ -9,7 +9,10 @@ import { map } from 'rxjs/operators';
 export interface UpdateUserData {
   username?: string;
   email?: string;
+  img_perfil?: string;
   nombre_isla?: string;
+  color_tema?: string;
+  password?: string;
 }
 
 /**
@@ -80,7 +83,7 @@ export class UsuarioService {
       .set('accion', 'actualizar')
       .set('id', userId.toString());
 
-    return this.http.post<ApiResponse>(this.baseUrl, updateData, { params });
+    return this.http.patch<ApiResponse>(this.baseUrl, updateData, { params });
   }
 
   /**
@@ -125,55 +128,22 @@ export class UsuarioService {
     );
   }
 
-  /**
-   * Obtiene un aldeano específico por su ID
-   * @param aldeanoId ID del aldeano
-   */
-  public getAldeanoById(aldeanoId: number): Observable<AldeanoUsuario> {
-    const params = new HttpParams()
-      .set('controlador', 'AldeanosUsuario')
-      .set('accion', 'ver')
-      .set('id', aldeanoId.toString());
 
-    return this.http.get<ApiResponse>(this.baseUrl, { params }).pipe(
-      map((response) => {
-        if (response.status === 'success' && response.data) {
-          return response.data as AldeanoUsuario;
-        }
-        throw new Error('Error al obtener aldeano');
-      }),
-    );
-  }
 
   /**
-   * Obtiene el contador de aldeanos de un usuario
-   * @param userId ID del usuario
+   * Elimina un aldeano de los favoritos del usuario
+   * @param userId ID del usuario logueado
+   * @param idApi ID del aldeano en la API de Nookipedia (ej: 'ant00')
    */
-  public contarAldeanosUsuario(userId: number): Observable<number> {
-    const params = new HttpParams()
-      .set('controlador', 'AldeanosUsuario')
-      .set('accion', 'contarPorUsuario')
-      .set('id_usuario', userId.toString());
-
-    return this.http.get<ApiResponse>(this.baseUrl, { params }).pipe(
-      map((response) => {
-        if (response.status === 'success' && response.data?.total !== undefined) {
-          return response.data.total;
-        }
-        return 0;
-      }),
-    );
-  }
-
-  /**
-   * Elimina un aldeano del usuario
-   * @param aldeanoId ID del aldeano a eliminar
-   */
-  public deleteAldeanoUsuario(aldeanoId: number): Observable<ApiResponse> {
+  public deleteAldeanoUsuario(
+    userId: number,
+    idApi: string,
+  ): Observable<ApiResponse> {
     const params = new HttpParams()
       .set('controlador', 'AldeanosUsuario')
       .set('accion', 'eliminar')
-      .set('id', aldeanoId.toString());
+      .set('id_usuario', userId.toString())
+      .set('id_api', idApi);
 
     return this.http.delete<ApiResponse>(this.baseUrl, { params });
   }
@@ -201,9 +171,7 @@ export class UsuarioService {
 
           // Filtrar por tipo si se proporciona
           if (tipoId !== undefined) {
-            coleccionables = coleccionables.filter(
-              (c) => c.id_tipo === tipoId,
-            );
+            coleccionables = coleccionables.filter((c) => c.id_tipo === tipoId);
           }
 
           return coleccionables;
@@ -213,27 +181,7 @@ export class UsuarioService {
     );
   }
 
-  /**
-   * Obtiene un coleccionable específico por su ID
-   * @param coleccionableId ID del coleccionable
-   */
-  public getColeccionableById(
-    coleccionableId: number,
-  ): Observable<ColeccionableUsuario> {
-    const params = new HttpParams()
-      .set('controlador', 'ColeccionablesUsuario')
-      .set('accion', 'ver')
-      .set('id', coleccionableId.toString());
 
-    return this.http.get<ApiResponse>(this.baseUrl, { params }).pipe(
-      map((response) => {
-        if (response.status === 'success' && response.data) {
-          return response.data as ColeccionableUsuario;
-        }
-        throw new Error('Error al obtener coleccionable');
-      }),
-    );
-  }
 
   /**
    * Obtiene coleccionables de un usuario filtrados por tipo de coleccionable
@@ -249,80 +197,24 @@ export class UsuarioService {
   }
 
   /**
-   * Elimina un coleccionable del usuario
-   * @param coleccionableId ID del coleccionable a eliminar
+   * Elimina un coleccionable (pez, bicho, fósil...) de los favoritos del usuario
+   * @param userId ID del usuario logueado
+   * @param idApi ID único del ítem en la API (ej: 'bitterling', 'tricera-torso')
    */
   public deleteColeccionableUsuario(
-    coleccionableId: number,
+    userId: number,
+    idApi: string,
   ): Observable<ApiResponse> {
+    // Configuramos los parámetros para que coincidan con lo que espera el controlador PHP
     const params = new HttpParams()
       .set('controlador', 'ColeccionablesUsuario')
       .set('accion', 'eliminar')
-      .set('id', coleccionableId.toString());
+      .set('id_usuario', userId.toString())
+      .set('id_api', idApi);
 
     return this.http.delete<ApiResponse>(this.baseUrl, { params });
   }
 
-  /**
-   * Obtiene todos los tipos de coleccionables
-   */
-  public getTiposColeccionables(): Observable<TipoColeccionable[]> {
-    const params = new HttpParams()
-      .set('controlador', 'TipoColeccionable')
-      .set('accion', 'listar');
-
-    return this.http.get<ApiResponse>(this.baseUrl, { params }).pipe(
-      map((response) => {
-        if (response.status === 'success' && Array.isArray(response.data)) {
-          return response.data as TipoColeccionable[];
-        }
-        return [];
-      }),
-    );
-  }
-
-  // ===== MÉTODOS DE ESTADÍSTICAS =====
-
-  /**
-   * Obtiene estadísticas del usuario (conteo de aldeanos y coleccionables por tipo)
-   * @param userId ID del usuario
-   */
-  public getEstadisticasUsuario(
-    userId: number,
-  ): Observable<{
-    totalAldeanos: number;
-    totalColeccionables: number;
-    coleccionablesPorTipo: { tipo: string; cantidad: number }[];
-  }> {
-    return new Observable((observer) => {
-      Promise.all([
-        this.contarAldeanosUsuario(userId).toPromise(),
-        this.getColeccionablesUsuario(userId).toPromise(),
-        this.getTiposColeccionables().toPromise(),
-      ])
-        .then(([totalAldeanos, coleccionables, tipos]) => {
-          const totalColeccionables = coleccionables?.length || 0;
-
-          // Contar por tipo
-          const coleccionablesPorTipo = (tipos || []).map((tipo) => ({
-            tipo: tipo.nombre,
-            cantidad: (coleccionables || []).filter(
-              (c) => c.id_tipo === tipo.id,
-            ).length,
-          }));
-
-          observer.next({
-            totalAldeanos: totalAldeanos || 0,
-            totalColeccionables,
-            coleccionablesPorTipo,
-          });
-          observer.complete();
-        })
-        .catch((error) => {
-          observer.error(error);
-        });
-    });
-  }
 
   // ===== MÉTODOS PARA CREAR ALDEANOS =====
 

@@ -6,8 +6,9 @@ export const MOCK_VILLAGERS = [
         personality: 'Presumido',
         birthday_day: '1',
         birthday_month: 'Octubre',
+        sign: 'Libra',
         sign_es: 'Libra',
-        sign_icon: 'bi-zodiac-libra',
+        sign_icon: 'libra.png',
         quote: 'La elegancia es un estilo de vida, no una opción.',
     },
     {
@@ -17,8 +18,9 @@ export const MOCK_VILLAGERS = [
         personality: 'Presumido',
         birthday_day: '29',
         birthday_month: 'Septiembre',
+        sign: 'Libra',
         sign_es: 'Libra',
-        sign_icon: 'bi-zodiac-libra',
+        sign_icon: 'libra.png',
         quote: 'Nunca subestimes a alguien por su tamaño.',
     },
 ];

@@ -131,18 +131,4 @@ describe('AuthService', () => {
       expect(service.getCurrentUser()).toBeNull();
     });
   });
-
-  describe('Token Management', () => {
-    it('should save and retrieve token', () => {
-      const token = 'test_token_12345';
-      sessionStorage.setItem('auth_token', token);
-      expect(service.getToken()).toBe(token);
-    });
-
-    it('should remove token on logout', () => {
-      sessionStorage.setItem('auth_token', 'test_token');
-      service.logout();
-      expect(service.getToken()).toBeNull();
-    });
-  });
 });

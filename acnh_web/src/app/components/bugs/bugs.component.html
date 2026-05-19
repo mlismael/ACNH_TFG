@@ -82,10 +82,9 @@
 
                     <div class="position-absolute bottom-0 end-0 pe-3 pb-2">
                         @if (isLoggedIn) {
-                        <button class="btn-heart p-0 border-0 bg-transparent" [class.active]="esBichoAgregado(b.name)"
+                        <button class="btn-heart p-0 border-0 bg-transparent" [class.active]="esBichoAgregado(b.number)"
                             (click)="ponerAFavoritos(b)" type="button">
-                            <i class="bi" [class.bi-star-fill]="esBichoAgregado(b.name)"
-                                [class.bi-star]="!esBichoAgregado(b.name)"></i>
+                            <i [class]="esBichoAgregado(b.number) ? 'bi bi-star-fill' : 'bi bi-star'"></i>
                         </button>
                         } @else {
                         <a [routerLink]="['/login']" class="btn-heart text-decoration-none" title="Inicia sesión">

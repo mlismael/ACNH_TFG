@@ -2,29 +2,29 @@
 // FrontController - Controlador frontal para API REST en JSON
 // Enruta las peticiones a los controladores correspondientes
 
-class FrontController {
-      static function main() {
-           // Incluimos las clases necesarias
+class FrontController
+{
+      static function main()
+      {
+            // Incluimos las clases necesarias
             require 'libs/Config.php';
             require 'libs/SPDO.php';
             require 'setup.php';
 
             // --- CONFIGURACIÓN DE CORS DINÁMICA ---
-            // Lista de orígenes permitidos ( local y  URL de Angular en producción)
             $allowedOrigins = [
-                'http://localhost:4200',
-                'https://acnh-tfg.vercel.app',  // <-- Aquí pondrás la URL que te dé Vercel/Netlify
+                  'http://localhost:4200',
+                  'https://acnh-tfg.vercel.app'
             ];
 
-            // Obtenemos el origen de la petición actual
-            $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+            $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-            // Si el origen que nos llama está en nuestra lista, se lo asignamos dinámicamente al header
+            // Si coincide con la lista, le damos su origen. Si no, dejamos que pase 
+            // enviando el origen que pide para evitar bloqueos del navegador en producción.
             if (in_array($origin, $allowedOrigins)) {
-                header("Access-Control-Allow-Origin: " . $origin);
+                  header("Access-Control-Allow-Origin: " . $origin);
             } else {
-                // Por defecto o seguridad si no coincide, dejamos el local para que no te rompa las pruebas
-                header('Access-Control-Allow-Origin: http://localhost:4200');
+                  header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app");
             }
 
             header('Content-Type: application/json; charset=utf-8');
@@ -32,8 +32,9 @@ class FrontController {
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
             header('Access-Control-Allow-Credentials: true');
 
+            // Cambiamos a 200 que Angular lo digiere mejor en producción
             if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-                  http_response_code(204);
+                  http_response_code(200);
                   exit;
             }
 
@@ -73,4 +74,3 @@ class FrontController {
             }
       }
 }
-?>

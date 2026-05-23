@@ -11,16 +11,16 @@ class FrontController
             require 'libs/SPDO.php';
             require 'setup.php';
 
-            // --- CONFIGURACIÓN DE CORS DINÁMICA ---
+            // --- CONFIGURACIÓN DE CORS DUAL AUTOMÁTICA (LOCAL + PRODUCTION) ---
             $allowedOrigins = [
                   'http://localhost:4200',
                   'https://acnh-tfg.vercel.app'
             ];
 
-            $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+            // Capturamos el origen. Si no viene (peticiones OPTIONS), usamos Vercel por defecto
+            $origin = $_SERVER['HTTP_ORIGIN'] ?? 'https://acnh-tfg.vercel.app';
 
-            // Si coincide con la lista, le damos su origen. Si no, dejamos que pase 
-            // enviando el origen que pide para evitar bloqueos del navegador en producción.
+            // Si el origen está en nuestra lista de confianza, lo devolvemos dinámicamente
             if (in_array($origin, $allowedOrigins)) {
                   header("Access-Control-Allow-Origin: " . $origin);
             } else {
@@ -32,7 +32,7 @@ class FrontController
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
             header('Access-Control-Allow-Credentials: true');
 
-            // Cambiamos a 200 que Angular lo digiere mejor en producción
+            // Responder con 200 OK a las peticiones previas de Angular
             if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
                   http_response_code(200);
                   exit;

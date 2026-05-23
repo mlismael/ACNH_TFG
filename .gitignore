@@ -20,3 +20,9 @@
 /fuel/app/cache/*/*
 /fuel/app/config/crypt.php
 acnh_web/src/assets/
+
+# Environment files - Never commit these with credentials
+.env.local
+.env.production
+acnh_project/.env.local
+acnh_project/.env.production

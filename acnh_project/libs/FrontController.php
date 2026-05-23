@@ -3,28 +3,24 @@
 
 class FrontController {
       static function main() {
-            // --- CONFIGURACIÓN DE CORS DUAL ROBUSTA ---
+            // --- CARGA DE VARIABLES DE ENTORNO ---
+            require 'libs/EnvLoader.php';
+            EnvLoader::load();
+            
+            // --- CONFIGURACIÓN DE CORS DESDE VARIABLES DE ENTORNO ---
             // IMPORTANTE: Estos headers DEBEN ir antes de cualquier output
-            
-            // Lista blanca de orígenes permitidos
-            $allowed_origins = [
-                  'http://localhost:4200',
-                  'http://localhost',
-                  'https://acnh-tfg.vercel.app',
-                  'https://acnhtfg-production.up.railway.app'
-            ];
-            
+            $allowed_origins = EnvLoader::getAllowedOrigins();
             $origin = isset($_SERVER['HTTP_ORIGIN']) ? trim($_SERVER['HTTP_ORIGIN']) : '';
             
-            // Si el origen está en la lista blanca, lo enviamos; si no, enviamos Vercel como default
+            // Si el origen está en la lista blanca, lo enviamos
             if (in_array($origin, $allowed_origins, true)) {
                   header("Access-Control-Allow-Origin: " . $origin, true);
             } else if (!empty($origin)) {
-                  // Si viene un origin que no reconocemos, logramos para debuggear
-                  error_log("CORS: Origin no permitido: " . $origin);
-                  header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app", true);
+                  // Origin no permitido - usar el primero de la lista como fallback
+                  error_log("CORS: Origin no permitido: " . $origin . ". Orígenes permitidos: " . implode(', ', $allowed_origins));
+                  header("Access-Control-Allow-Origin: " . reset($allowed_origins), true);
             } else {
-                  header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app", true);
+                  header("Access-Control-Allow-Origin: " . reset($allowed_origins), true);
             }
 
             // Cabeceras estándar e imprescindibles para peticiones HTTP

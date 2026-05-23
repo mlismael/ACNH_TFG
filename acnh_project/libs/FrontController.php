@@ -4,14 +4,30 @@
 
 class FrontController {
       static function main() {
-            // Incluimos las clases necesarias
+           // Incluimos las clases necesarias
             require 'libs/Config.php';
             require 'libs/SPDO.php';
             require 'setup.php';
 
-            // Establecemos header JSON y CORS por defecto
+            // --- CONFIGURACIÓN DE CORS DINÁMICA ---
+            // Lista de orígenes permitidos ( local y  URL de Angular en producción)
+            $allowedOrigins = [
+                'http://localhost:4200',
+                'https://tu-tfg-angular.vercel.app',  // <-- Aquí pondrás la URL que te dé Vercel/Netlify
+            ];
+
+            // Obtenemos el origen de la petición actual
+            $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+            // Si el origen que nos llama está en nuestra lista, se lo asignamos dinámicamente al header
+            if (in_array($origin, $allowedOrigins)) {
+                header("Access-Control-Allow-Origin: " . $origin);
+            } else {
+                // Por defecto o seguridad si no coincide, dejamos el local para que no te rompa las pruebas
+                header('Access-Control-Allow-Origin: http://localhost:4200');
+            }
+
             header('Content-Type: application/json; charset=utf-8');
-            header('Access-Control-Allow-Origin: http://localhost:4200');
             header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
             header('Access-Control-Allow-Credentials: true');

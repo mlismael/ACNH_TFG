@@ -10,11 +10,16 @@ $config = Config::singleton();
 $config->set('controllersFolder', 'controllers/');
 $config->set('modelsFolder', 'models/');
 
-// Parámetros de conexión a la BD
-$config->set('dbhost', '127.0.0.1');
-$config->set('dbname', 'acnh_project'); 
-$config->set('dbuser', 'root');
-$config->set('dbpass', '');
+/**
+ * CONFIGURACIÓN DE LA BASE DE DATOS (Híbrida Local / Railway)
+ * * getenv() lee las variables automáticas que Railway inyecta en el servidor.
+ * Si no encuentra ninguna (entorno local en Mac), aplica los valores por defecto tras el elvis operator (?:).
+ */
+$config->set('dbhost', getenv('MYSQLHOST')     ?: '127.0.0.1');
+$config->set('dbname', getenv('MYSQLDATABASE') ?: 'acnh_project'); 
+$config->set('dbuser', getenv('MYSQLUSER')     ?: 'root');
+$config->set('dbpass', getenv('MYSQLPASSWORD') ?: '');
+$config->set('dbport', getenv('MYSQLPORT')     ?: '3306'); // Añadimos el puerto por seguridad de Railway
 
 // Configuración de Nookipedia (token privado)
 $config->set('nookipedia_base_url', 'https://api.nookipedia.com');

@@ -53,7 +53,7 @@ export interface RegisterData {
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost/ACNH_TFG/acnh_project/index.php';
+  private baseUrl = 'https://acnhtfg-production.up.railway.app/index.php';
   private currentUser = new BehaviorSubject<User | null>(
     this.getUserFromStorage(),
   );

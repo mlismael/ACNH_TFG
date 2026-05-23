@@ -13,7 +13,7 @@ class FrontController {
             // Lista de orígenes permitidos ( local y  URL de Angular en producción)
             $allowedOrigins = [
                 'http://localhost:4200',
-                'https://tu-tfg-angular.vercel.app',  // <-- Aquí pondrás la URL que te dé Vercel/Netlify
+                'https://acnh-tfg.vercel.app',  // <-- Aquí pondrás la URL que te dé Vercel/Netlify
             ];
 
             // Obtenemos el origen de la petición actual

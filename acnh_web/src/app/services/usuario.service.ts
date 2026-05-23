@@ -63,7 +63,7 @@ export interface ApiResponse<T = any> {
   providedIn: 'root',
 })
 export class UsuarioService {
-  private baseUrl = 'http://localhost/ACNH_TFG/acnh_project/index.php';
+  private baseUrl = 'https://acnhtfg-production.up.railway.app/index.php';
 
   constructor(private http: HttpClient) {}
 

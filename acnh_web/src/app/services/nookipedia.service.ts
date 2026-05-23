@@ -8,7 +8,7 @@ import { TranslationService } from './translation.service';
     providedIn: 'root',
 })
 export class NookipediaService {
-    private baseUrl = 'http://localhost/ACNH_TFG/acnh_project/index.php';
+    private baseUrl = 'https://acnhtfg-production.up.railway.app/index.php';
 
     constructor(private http: HttpClient, private translationService: TranslationService) { }
 

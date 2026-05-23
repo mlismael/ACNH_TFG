@@ -57,7 +57,16 @@ class EnvLoader {
      * Obtiene una variable de entorno
      */
     public static function get($key, $default = '') {
-        return isset(self::$env[$key]) ? self::$env[$key] : $default;
+        if (isset(self::$env[$key])) {
+            return self::$env[$key];
+        }
+
+        $envValue = getenv($key);
+        if ($envValue !== false) {
+            return $envValue;
+        }
+
+        return $default;
     }
 
     /**

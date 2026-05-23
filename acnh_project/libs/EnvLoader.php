@@ -1,25 +1,34 @@
 <?php
 // EnvLoader.php - Cargador de variables de entorno
 
-class EnvLoader {
+class EnvLoader
+{
     private static $env = [];
     private static $loaded = false;
 
     /**
      * Carga las variables de entorno desde archivos .env
+     * Las variables del sistema (Railway) siempre tienen prioridad sobre el fichero
      */
-    public static function load() {
+    public static function load()
+    {
         if (self::$loaded) {
             return;
         }
 
-        // Detectar entorno
-        $env_file = getenv('APP_ENV') === 'production' ? '.env.production' : '.env.local';
-        $env_path = dirname(__FILE__) . '/../' . $env_file;
+        // Leer APP_ENV directamente del sistema ANTES de cargar ningún fichero
+        // Así Railway puede controlar qué fichero se usa (o ninguno)
+        $app_env = getenv('APP_ENV');
 
-        // Si el archivo existe, cargarlo
-        if (file_exists($env_path)) {
-            self::parseEnvFile($env_path);
+        // En producción (Railway inyecta APP_ENV=production) no cargamos ningún fichero:
+        // todas las variables vienen del sistema directamente
+        if ($app_env !== 'production') {
+            $env_file = '.env.local';
+            $env_path = dirname(__FILE__) . '/../' . $env_file;
+
+            if (file_exists($env_path)) {
+                self::parseEnvFile($env_path);
+            }
         }
 
         self::$loaded = true;
@@ -27,67 +36,68 @@ class EnvLoader {
 
     /**
      * Parsea un archivo .env y carga las variables
+     * Solo se llama en entorno local
      */
-    private static function parseEnvFile($file) {
+    private static function parseEnvFile($file)
+    {
         $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        
+
         foreach ($lines as $line) {
-            // Ignorar comentarios
             if (strpos(trim($line), '#') === 0) {
                 continue;
             }
 
-            // Parsear línea KEY=VALUE
             if (strpos($line, '=') !== false) {
                 list($key, $value) = explode('=', $line, 2);
-                $key = trim($key);
+                $key   = trim($key);
                 $value = trim($value);
 
-                // Guardar en array
                 self::$env[$key] = $value;
-                
-                // Opcionalmente, también set en $_ENV y putenv
-                $_ENV[$key] = $value;
+                $_ENV[$key]      = $value;
                 putenv("$key=$value");
             }
         }
     }
 
     /**
-     * Obtiene una variable de entorno
+     * Obtiene una variable de entorno.
+     * Orden de prioridad: sistema (getenv / $_SERVER) > fichero .env > default
+     * Esto garantiza que Railway siempre gana sobre cualquier fichero
      */
-    public static function get($key, $default = '') {
-        if (isset(self::$env[$key])) {
-            return self::$env[$key];
-        }
-
-        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
-            return $_ENV[$key];
+    public static function get($key, $default = '')
+    {
+        // 1. Variable del sistema (Railway, Apache, etc.)
+        $sysValue = getenv($key);
+        if ($sysValue !== false && $sysValue !== '') {
+            return $sysValue;
         }
 
         if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
             return $_SERVER[$key];
         }
 
-        $envValue = getenv($key);
-        if ($envValue !== false) {
-            return $envValue;
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+            return $_ENV[$key];
+        }
+
+        // 2. Fichero .env local (solo en desarrollo)
+        if (isset(self::$env[$key]) && self::$env[$key] !== '') {
+            return self::$env[$key];
         }
 
         return $default;
     }
 
     /**
-     * Obtiene valores CORS como array
+     * Obtiene los orígenes CORS permitidos como array
      */
-    public static function getAllowedOrigins() {
-        $default = 'http://localhost:4200';
-        if (getenv('APP_ENV') === 'production') {
-            $default = 'https://acnh-tfg.vercel.app';
-        }
+    public static function getAllowedOrigins()
+    {
+        $default = getenv('APP_ENV') === 'production'
+            ? 'https://acnh-tfg.vercel.app'
+            : 'http://localhost:4200';
 
         $origins_str = self::get('ALLOWED_ORIGINS', $default);
         return array_map('trim', explode(',', $origins_str));
     }
 }
-?>

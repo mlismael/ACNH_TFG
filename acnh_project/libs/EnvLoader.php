@@ -61,6 +61,14 @@ class EnvLoader {
             return self::$env[$key];
         }
 
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+            return $_ENV[$key];
+        }
+
+        if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+            return $_SERVER[$key];
+        }
+
         $envValue = getenv($key);
         if ($envValue !== false) {
             return $envValue;
@@ -73,7 +81,12 @@ class EnvLoader {
      * Obtiene valores CORS como array
      */
     public static function getAllowedOrigins() {
-        $origins_str = self::get('ALLOWED_ORIGINS', 'http://localhost:4200');
+        $default = 'http://localhost:4200';
+        if (getenv('APP_ENV') === 'production') {
+            $default = 'https://acnh-tfg.vercel.app';
+        }
+
+        $origins_str = self::get('ALLOWED_ORIGINS', $default);
         return array_map('trim', explode(',', $origins_str));
     }
 }

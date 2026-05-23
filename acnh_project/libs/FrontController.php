@@ -1,60 +1,49 @@
 <?php
 // FrontController - Controlador frontal para API REST en JSON
-// Enruta las peticiones a los controladores correspondientes
 
-class FrontController
-{
-      static function main()
-      {
-            // Incluimos las clases necesarias
-            require 'libs/Config.php';
-            require 'libs/SPDO.php';
-            require 'setup.php';
+class FrontController {
+      static function main() {
+            // --- CONFIGURACIÓN DE CORS DUAL ROBUSTA ---
+            $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-            // --- CONFIGURACIÓN DE CORS DUAL AUTOMÁTICA (LOCAL + PRODUCTION) ---
-            $allowedOrigins = [
-                  'http://localhost:4200',
-                  'https://acnh-tfg.vercel.app'
-            ];
-
-            // Capturamos el origen. Si no viene (peticiones OPTIONS), usamos Vercel por defecto
-            $origin = $_SERVER['HTTP_ORIGIN'] ?? 'https://acnh-tfg.vercel.app';
-
-            // Si el origen está en nuestra lista de confianza, lo devolvemos dinámicamente
-            if (in_array($origin, $allowedOrigins)) {
-                  header("Access-Control-Allow-Origin: " . $origin);
+            // Forzamos el origen dinámico exacto si coincide con nuestras dos URLs válidas
+            if ($origin === 'http://localhost:4200' || $origin === 'https://acnh-tfg.vercel.app') {
+                header("Access-Control-Allow-Origin: " . $origin);
             } else {
-                  header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app");
+                // Comodín seguro para evitar que el navegador bloquee las respuestas por defecto
+                header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app");
             }
 
+            // Cabeceras estándar e imprescindibles para peticiones HTTP
             header('Content-Type: application/json; charset=utf-8');
             header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
             header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
             header('Access-Control-Allow-Credentials: true');
 
-            // Responder con 200 OK a las peticiones previas de Angular
+            // Si es una petición previa de Angular (OPTIONS), respondemos 200 directo y paramos
             if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
                   http_response_code(200);
                   exit;
             }
 
-            // Formamos el nombre del Controlador
+            // --- RESTO DEL CÓDIGO DE TU FRONTCONTROLLER ---
+            require 'libs/Config.php';
+            require 'libs/SPDO.php';
+            require 'setup.php';
+
             if (!empty($_REQUEST['controlador']))
                   $controllerName = $_REQUEST['controlador'] . 'Controller';
             else
                   $controllerName = "AppController";
 
-            // La acción, si no hay, usamos index como acción por defecto
             if (!empty($_REQUEST['accion']))
                   $actionName = $_REQUEST['accion'];
             else
                   $actionName = "index";
 
-            // Obtenemos la ruta a la carpeta con los controladores
             $config = Config::singleton();
             $controllerPath = $config->get('controllersFolder') . $controllerName . '.php';
 
-            // Incluimos el fichero que contiene nuestro controlador
             if (is_file($controllerPath))
                   require $controllerPath;
             else {
@@ -63,7 +52,6 @@ class FrontController
                   exit;
             }
 
-            // Creamos una instancia del controlador y llamamos a la acción
             if (class_exists($controllerName) && method_exists($controllerName, $actionName)) {
                   $controller = new $controllerName();
                   $controller->$actionName();
@@ -74,3 +62,4 @@ class FrontController
             }
       }
 }
+?>

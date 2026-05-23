@@ -4,21 +4,35 @@
 class FrontController {
       static function main() {
             // --- CONFIGURACIÓN DE CORS DUAL ROBUSTA ---
-            $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-
-            // Forzamos el origen dinámico exacto si coincide con nuestras dos URLs válidas
-            if ($origin === 'http://localhost:4200' || $origin === 'https://acnh-tfg.vercel.app') {
-                header("Access-Control-Allow-Origin: " . $origin);
+            // IMPORTANTE: Estos headers DEBEN ir antes de cualquier output
+            
+            // Lista blanca de orígenes permitidos
+            $allowed_origins = [
+                  'http://localhost:4200',
+                  'http://localhost',
+                  'https://acnh-tfg.vercel.app',
+                  'https://acnhtfg-production.up.railway.app'
+            ];
+            
+            $origin = isset($_SERVER['HTTP_ORIGIN']) ? trim($_SERVER['HTTP_ORIGIN']) : '';
+            
+            // Si el origen está en la lista blanca, lo enviamos; si no, enviamos Vercel como default
+            if (in_array($origin, $allowed_origins, true)) {
+                  header("Access-Control-Allow-Origin: " . $origin, true);
+            } else if (!empty($origin)) {
+                  // Si viene un origin que no reconocemos, logramos para debuggear
+                  error_log("CORS: Origin no permitido: " . $origin);
+                  header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app", true);
             } else {
-                // Comodín seguro para evitar que el navegador bloquee las respuestas por defecto
-                header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app");
+                  header("Access-Control-Allow-Origin: https://acnh-tfg.vercel.app", true);
             }
 
             // Cabeceras estándar e imprescindibles para peticiones HTTP
-            header('Content-Type: application/json; charset=utf-8');
-            header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-            header('Access-Control-Allow-Credentials: true');
+            header('Content-Type: application/json; charset=utf-8', true);
+            header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS', true);
+            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept', true);
+            header('Access-Control-Allow-Credentials: true', true);
+            header('Access-Control-Max-Age: 86400', true);
 
             // Si es una petición previa de Angular (OPTIONS), respondemos 200 directo y paramos
             if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

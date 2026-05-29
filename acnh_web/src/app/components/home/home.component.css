@@ -328,8 +328,16 @@
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-    .calendario-grid:last-child {
-        height: 360px;
+    .cal-toggle {
+        display: none;
+    }
+
+    .calendario-contenedor {
+        padding: 0.5rem;
+    }
+
+    .calendario-grid {
+        gap: 2px;
     }
 
     .dia-semana {
@@ -340,17 +348,13 @@
         font-size: 0.7rem;
     }
 
-    .dia-celda {
-        padding: 3px;
+    .cal-mes-label {
+        font-size: 0.8rem;
     }
 
     .evento-etiqueta {
         font-size: 0.55rem;
         padding: 1px 3px;
-    }
-
-    .cal-mes-label {
-        font-size: 0.8rem;
     }
 
     .toggle-btn {
@@ -363,13 +367,21 @@
         height: 28px;
         font-size: 1rem;
     }
+
+    .dia-celda {
+        padding: 2px;
+        min-height: 55px !important;
+        overflow: hidden;
+    }
+
+    .calendario-grid:last-child {
+        height: auto;
+        grid-template-rows: unset;
+        grid-auto-rows: 110px;
+    }
 }
 
 @media (max-width: 400px) {
-    .calendario-grid:last-child {
-        height: 300px;
-    }
-
     .dia-semana {
         font-size: 0.55rem;
     }

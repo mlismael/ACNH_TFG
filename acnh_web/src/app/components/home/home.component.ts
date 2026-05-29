@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   currentDate = signal(new Date()); // Fecha de referencia
   vistaMensual = signal<boolean>(true);
-  
+
   // Almacén de eventos para evitar recargas constantes y facilitar el cruce de meses
   eventosCargados = signal<any[]>([]);
 
@@ -73,6 +73,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     };
     this.themeService.setPageTheme(homeTheme);
     this.cargarDatos();
+
+    if (window.innerWidth <= 600) {
+      this.vistaMensual.set(true);
+    }
   }
 
   /**
@@ -112,7 +116,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   calendarDaysVisible = computed(() => {
     const ref = this.currentDate();
     const eventos = this.eventosCargados();
-    
+
     if (this.vistaMensual()) {
       return this.generarMesCompleto(ref, eventos);
     } else {
@@ -129,7 +133,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     const resultado: CalendarDay[] = [];
     for (let i = 0; i < inicio; i++) resultado.push({ day: null, fullDate: '', events: [] });
-    
+
     for (let i = 1; i <= diasEnMes; i++) {
       const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
       resultado.push({
@@ -145,7 +149,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const ref = new Date(fecha);
     const dayOfWeek = ref.getDay(); // 0 (Dom) a 6 (Sab)
     const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    
+
     const lunes = new Date(ref);
     lunes.setDate(ref.getDate() + diffToMonday);
 

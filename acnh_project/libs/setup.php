@@ -18,7 +18,7 @@ $config->set('modelsFolder', 'models/');
 $config->set('dbhost', getenv('MYSQLHOST')     ?: '127.0.0.1');
 $config->set('dbname', getenv('MYSQLDATABASE') ?: 'acnh_project'); 
 $config->set('dbuser', getenv('MYSQLUSER')     ?: 'root');
-$config->set('dbpass', getenv('MYSQLPASSWORD') ?: '');
+$config->set('dbpass', getenv('MYSQLPASSWORD') ?: getenv('MYSQL_ROOT_PASSWORD') ?: '');
 $config->set('dbport', getenv('MYSQLPORT')     ?: '3306'); // Añadimos el puerto por seguridad de Railway
 
 // Configuración de Nookipedia (token privado)
